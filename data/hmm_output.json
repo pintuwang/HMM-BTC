@@ -1,11 +1,19 @@
 {
-  "generated_at": "2026-04-11 12:19 UTC",
+  "generated_at": "2026-04-11 15:40 UTC",
   "latest_date": "2026-04-10",
   "btc_close": 72979.05,
   "btc_ma20": 68887.93,
   "btc_ma20_distance_pct": 5.94,
   "realized_vol_7d": 29.37,
   "momentum_3d_pct": 1.44,
+  "bear_prob_trend": "deteriorating",
+  "bear_probs_5d": [
+    0.1698,
+    0.9982,
+    0.9983,
+    0.93,
+    0.7776
+  ],
   "current_state": "Bear",
   "bull_probability": 0.0021,
   "chop_probability": 0.2202,
@@ -842,10 +850,23 @@
       "ma20_distance": 5.94
     }
   ],
+  "ivr": {
+    "hvr": 22.9,
+    "hv_30d": 63.6,
+    "hv_10d": 58.5,
+    "hv_52w_high": 139.4,
+    "hv_52w_low": 41.0,
+    "vol_trend": "stable",
+    "ivr_label": "Low (23)",
+    "premium_quality": "cheap",
+    "sell_strategy": "Skip selling \u2014 premium too low for risk taken"
+  },
   "recommendation": {
     "signal": "ORANGE",
-    "action": "No new short puts \u2014 manage existing positions",
+    "action": "Fresh Bear \u2014 manage existing positions, no new puts",
     "strike_adj": "Close or roll existing positions down",
-    "caution": "Fresh Bear regime \u2014 likely more downside"
+    "caution": "Fresh Bear regime day 4 \u2014 likely more downside. \u26a0\ufe0f HVR 23 \u2014 premium cheap, reduce size",
+    "covered_call": "\ud83d\udfe1 Covered call possible but wait 2\u20133 days to confirm Bear",
+    "ivr_note": "\u26a0\ufe0f HVR 23 \u2014 premium cheap, reduce size"
   }
 }
