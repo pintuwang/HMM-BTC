@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>BTC 3-State HMM Regime Tracker</title>
+<title>BTC HMM + IVR Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -19,352 +19,333 @@
     --green:  #4ade80;
     --red:    #f87171;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'IBM Plex Mono', 'Courier New', monospace;
     padding: 20px 16px 48px;
-    min-height: 100vh;
   }
-
   .container { max-width: 860px; margin: 0 auto; }
+  .header { margin-bottom: 24px; }
+  .header h1 { font-size: 20px; font-weight: 700; color: var(--bull); }
+  .header p  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .updated   { font-size: 11px; color: var(--muted); margin-top: 6px; }
 
-  /* ── Header ── */
-  .header { margin-bottom: 28px; }
-  .header h1 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--bull);
-    letter-spacing: -0.5px;
-  }
-  .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .updated  { font-size: 11px; color: var(--muted); margin-top: 6px; }
-
-  /* ── Alert banner ── */
   .alert {
-    background: #2d1200;
-    border: 1px solid var(--orange);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: var(--orange);
-    display: none;
+    background: #2d1200; border: 1px solid var(--orange);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: 13px; color: var(--orange); display: none;
   }
   .alert.visible { display: block; }
 
-  /* ── Stat grid ── */
+  /* grids */
   .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 18px;
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 10px; margin-bottom: 14px;
   }
-  @media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media(max-width:560px){ .stat-grid,.two-col{ grid-template-columns:1fr 1fr; } }
 
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
   }
-  .stat-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .stat-card .value { font-size: 22px; font-weight: 700; margin-top: 6px; }
-  .stat-card .sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .card .value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+  .card .sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-  /* ── State pill ── */
-  .state-pill {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .state-pill.Bull  { background: rgba(0,255,204,0.15); color: var(--bull);  border: 1px solid var(--bull); }
-  .state-pill.Chop  { background: rgba(250,204,21,0.15); color: var(--chop); border: 1px solid var(--chop); }
-  .state-pill.Bear  { background: rgba(248,113,113,0.15); color: var(--bear); border: 1px solid var(--bear); }
-
-  /* ── Signal traffic light ── */
+  /* signal */
   .signal-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
+    display: flex; gap: 14px; align-items: flex-start;
   }
   .signal-dot {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 900;
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900;
   }
-  .signal-dot.GREEN  { background: rgba(74,222,128,0.2);  border: 2px solid #4ade80; color: #4ade80; }
-  .signal-dot.YELLOW { background: rgba(250,204,21,0.2);  border: 2px solid var(--chop); color: var(--chop); }
-  .signal-dot.ORANGE { background: rgba(249,115,22,0.2);  border: 2px solid var(--orange); color: var(--orange); }
-  .signal-dot.RED    { background: rgba(248,113,113,0.2); border: 2px solid var(--bear); color: var(--bear); }
+  .signal-dot.GREEN  { background:rgba(74,222,128,.2);  border:2px solid #4ade80; color:#4ade80; }
+  .signal-dot.YELLOW { background:rgba(250,204,21,.2);  border:2px solid var(--chop); color:var(--chop); }
+  .signal-dot.ORANGE { background:rgba(249,115,22,.2);  border:2px solid var(--orange); color:var(--orange); }
+  .signal-dot.RED    { background:rgba(248,113,113,.2); border:2px solid var(--bear); color:var(--bear); }
+  .signal-text h2    { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .signal-text p     { font-size:12px; color:var(--muted); line-height:1.6; }
+  .signal-text .caution    { font-size:11px; color:var(--orange); margin-top:5px; }
+  .signal-text .coveredcall{ font-size:11px; color:var(--chop); margin-top:5px; border-top:1px solid var(--border); padding-top:6px; }
 
-  .signal-text h2 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-  .signal-text p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
-  .signal-text .caution { font-size: 11px; color: var(--orange); margin-top: 6px; }
-
-  /* ── Probability bar ── */
-  .prob-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-    margin-bottom: 18px;
+  /* IVR panel */
+  .ivr-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
   }
-  .prob-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
-
-  .prob-row { margin-bottom: 12px; }
-  .prob-row:last-child { margin-bottom: 0; }
-  .prob-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 5px;
+  .ivr-panel h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
+  .ivr-gauge-wrap { position:relative; height:18px; background:var(--border); border-radius:9px; overflow:hidden; margin-bottom:10px; }
+  .ivr-gauge-fill { height:100%; border-radius:9px; transition:width .6s ease; }
+  .ivr-gauge-marker {
+    position:absolute; top:-2px; width:3px; height:22px;
+    background:#fff; border-radius:2px; transform:translateX(-50%);
   }
-  .prob-bar-bg {
-    height: 8px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
+  .ivr-zones {
+    display:flex; justify-content:space-between;
+    font-size:9px; color:var(--muted); margin-bottom:12px;
   }
-  .prob-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.6s ease;
-  }
-  .bull-fill  { background: var(--bull); }
-  .chop-fill  { background: var(--chop); }
-  .bear-fill  { background: var(--bear); }
+  .ivr-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .ivr-metric  { background:var(--bg); border-radius:6px; padding:8px 10px; }
+  .ivr-metric .im-label { font-size:9px; color:var(--muted); text-transform:uppercase; }
+  .ivr-metric .im-value { font-size:14px; font-weight:700; margin-top:3px; }
 
-  /* ── Transition matrix ── */
-  .matrix-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-    margin-bottom: 18px;
-  }
-  .matrix-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
+  /* bear trend mini chart */
+  .trend-row { display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .trend-dot  { width:8px; height:8px; border-radius:50%; }
+  .trend-label{ font-size:11px; color:var(--muted); }
+  .mini-bars  { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .mini-bar   { width:10px; border-radius:2px 2px 0 0; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { padding: 6px 10px; color: var(--muted); font-weight: 600; text-align: center; }
-  td { padding: 7px 10px; text-align: center; border: 1px solid var(--border); }
-  td.from-label { color: var(--muted); text-align: left; font-size: 11px; }
-  .high-prob { color: var(--bull); font-weight: 700; }
-  .med-prob  { color: var(--chop); }
-  .low-prob  { color: var(--muted); }
+  /* prob bars */
+  .prob-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
+  .prob-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
+  .prob-row { margin-bottom:10px; }
+  .prob-row:last-child { margin-bottom:0; }
+  .prob-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
+  .prob-bar-bg { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .prob-bar-fill { height:100%; border-radius:4px; transition:width .6s ease; }
+  .bull-fill { background:var(--bull); }
+  .chop-fill { background:var(--chop); }
+  .bear-fill { background:var(--bear); }
 
-  /* ── Chart ── */
-  .chart-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-    margin-bottom: 18px;
-  }
-  .chart-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
-  .chart-wrap { position: relative; height: 240px; }
+  /* chart */
+  .chart-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
+  .chart-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
+  .chart-wrap { position:relative; height:240px; }
 
-  /* ── BTC metrics ── */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-  .metric-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-  }
-  .metric-item .m-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
-  .metric-item .m-value { font-size: 16px; font-weight: 700; margin-top: 4px; }
+  /* matrix */
+  .matrix-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
+  .matrix-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { padding:6px 8px; color:var(--muted); font-weight:600; text-align:center; }
+  td { padding:7px 8px; text-align:center; border:1px solid var(--border); }
+  td.from-label { color:var(--muted); text-align:left; font-size:11px; }
+  .high-prob { color:var(--bull); font-weight:700; }
+  .med-prob  { color:var(--chop); }
+  .low-prob  { color:var(--muted); }
 
-  /* ── Footer ── */
-  .footer { font-size: 10px; color: #334155; text-align: center; margin-top: 24px; }
-
-  .loading { text-align: center; padding: 60px; color: var(--muted); font-size: 14px; }
+  .footer { font-size:10px; color:#334155; text-align:center; margin-top:24px; }
+  .loading { text-align:center; padding:60px; color:var(--muted); font-size:14px; }
 </style>
 </head>
 <body>
 <div class="container">
-
-  <!-- Header -->
   <div class="header">
-    <h1>₿ BTC 3-State HMM Regime Tracker</h1>
-    <p>Bull / Chop / Bear detection via Gaussian HMM · Yahoo Finance data · 2-year training window</p>
+    <h1>₿ BTC HMM + MSTR IVR Tracker</h1>
+    <p>3-State Regime (Bull/Chop/Bear) · MSTR Historical Vol Rank · Combined options strategy signal</p>
     <div class="updated" id="updated">Loading...</div>
   </div>
 
-  <!-- Alert Banner -->
   <div class="alert" id="alert-banner">
-    ⚠️ REGIME CHANGE ALERT — Bear probability crossed 30% threshold. Review open positions immediately.
+    ⚠️ REGIME CHANGE ALERT — Bear probability crossed 30% threshold. Review open positions.
   </div>
 
-  <div id="main-content" class="loading">Fetching regime data...</div>
-
+  <div id="main-content" class="loading">Fetching regime + IVR data...</div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-// Load JSON and render dashboard
-// ─────────────────────────────────────────────
 async function loadData() {
   try {
-    const res  = await fetch(`data/hmm_output.json?t=${Date.now()}`);
-    if (!res.ok) throw new Error("JSON not found");
-    const d    = await res.json();
+    const res = await fetch(`data/hmm_output.json?t=${Date.now()}`);
+    if (!res.ok) throw new Error("JSON not found — run python generate_hmm.py first");
+    const d = await res.json();
     render(d);
-  } catch (e) {
+  } catch(e) {
     document.getElementById("main-content").innerHTML =
-      `<div class="loading" style="color:#f87171">⚠️ Could not load HMM data.<br>${e.message}<br><br>
-      Run <code>python generate_hmm.py</code> first to generate data/hmm_output.json</div>`;
+      `<div class="loading" style="color:#f87171">⚠️ ${e.message}</div>`;
   }
 }
 
-function stateColor(s) {
-  return s === "Bull" ? "var(--bull)" : s === "Chop" ? "var(--chop)" : "var(--bear)";
+const stateColor = s => s==="Bull"?"var(--bull)":s==="Chop"?"var(--chop)":"var(--bear)";
+const sigColor   = s => ({GREEN:"#4ade80",YELLOW:"var(--chop)",ORANGE:"var(--orange)",RED:"var(--bear)"}[s]||"var(--muted)");
+const pClass     = p => p>=.6?"high-prob":p>=.3?"med-prob":"low-prob";
+
+function ivrColor(hvr) {
+  if (hvr === null) return "var(--muted)";
+  if (hvr < 30)  return "var(--muted)";
+  if (hvr < 50)  return "var(--chop)";
+  if (hvr < 70)  return "var(--bull)";
+  if (hvr < 85)  return "var(--orange)";
+  return "var(--bear)";
 }
 
-function signalColor(sig) {
-  const map = { GREEN: "#4ade80", YELLOW: "var(--chop)", ORANGE: "var(--orange)", RED: "var(--bear)" };
-  return map[sig] || "var(--muted)";
-}
-
-function probClass(p) {
-  if (p >= 0.6) return "high-prob";
-  if (p >= 0.3) return "med-prob";
-  return "low-prob";
+function ivrGradient(hvr) {
+  // colour the gauge fill based on HVR level
+  if (hvr < 30)  return "#475569";
+  if (hvr < 50)  return "var(--chop)";
+  if (hvr < 70)  return "var(--bull)";
+  if (hvr < 85)  return "var(--orange)";
+  return "var(--bear)";
 }
 
 function render(d) {
-  // Update timestamp
   document.getElementById("updated").textContent =
     `Last updated: ${d.generated_at}  ·  Data through: ${d.latest_date}`;
 
-  // Alert banner
-  if (d.regime_change_alert) {
-    const banner = document.getElementById("alert-banner");
-    banner.classList.add("visible");
-  }
+  if (d.regime_change_alert)
+    document.getElementById("alert-banner").classList.add("visible");
 
   const rec = d.recommendation;
+  const ivr = d.ivr || {};
+  const hvr = ivr.hvr !== null && ivr.hvr !== undefined ? ivr.hvr : null;
+
+  // Bear trend mini bars
+  const bp5 = d.bear_probs_5d || [];
+  const miniBars = bp5.map(p => {
+    const h = Math.max(4, Math.round(p * 40));
+    const c = p > 0.6 ? "var(--bear)" : p > 0.35 ? "var(--orange)" : "var(--chop)";
+    return `<div class="mini-bar" style="height:${h}px;background:${c}"></div>`;
+  }).join("");
+
+  const trendArrow = d.bear_prob_trend === "improving" ? "↓ improving" :
+                     d.bear_prob_trend === "deteriorating" ? "↑ deteriorating" : "→ stable";
+  const trendColor = d.bear_prob_trend === "improving" ? "var(--bull)" :
+                     d.bear_prob_trend === "deteriorating" ? "var(--bear)" : "var(--muted)";
 
   const html = `
-    <!-- State + Signal Row -->
+    <!-- Top stats -->
     <div class="stat-grid">
-      <div class="stat-card">
+      <div class="card">
         <div class="label">Current Regime</div>
         <div class="value" style="color:${stateColor(d.current_state)}">${d.current_state}</div>
         <div class="sub">Day ${d.days_in_current_state} in regime</div>
       </div>
-      <div class="stat-card">
+      <div class="card">
         <div class="label">Confidence</div>
         <div class="value" style="color:${stateColor(d.current_state)}">${(d.state_confidence*100).toFixed(0)}%</div>
-        <div class="sub">State posterior prob</div>
+        <div class="sub">
+          <div class="trend-row">
+            <div class="mini-bars">${miniBars}</div>
+            <span style="color:${trendColor};font-size:10px">${trendArrow}</span>
+          </div>
+        </div>
       </div>
-      <div class="stat-card">
+      <div class="card">
         <div class="label">BTC Close</div>
-        <div class="value" style="color:#e2e8f0">$${d.btc_close.toLocaleString()}</div>
-        <div class="sub">vs MA20: ${d.btc_ma20_distance_pct > 0 ? "+" : ""}${d.btc_ma20_distance_pct}%</div>
+        <div class="value">$${d.btc_close.toLocaleString()}</div>
+        <div class="sub">vs MA20: ${d.btc_ma20_distance_pct>0?"+":""}${d.btc_ma20_distance_pct}%</div>
       </div>
     </div>
 
-    <!-- Options Signal Card -->
+    <!-- Signal card -->
     <div class="signal-card">
       <div class="signal-dot ${rec.signal}">${rec.signal[0]}</div>
       <div class="signal-text">
-        <h2 style="color:${signalColor(rec.signal)}">${rec.signal} — ${rec.action}</h2>
+        <h2 style="color:${sigColor(rec.signal)}">${rec.signal} — ${rec.action}</h2>
         <p>Strike guidance: ${rec.strike_adj}</p>
         <div class="caution">⚠ ${rec.caution}</div>
+        <div class="coveredcall">📋 Covered call: ${rec.covered_call}</div>
       </div>
     </div>
 
-    <!-- Probability Bars -->
+    <!-- IVR Panel -->
+    <div class="ivr-panel">
+      <h3>MSTR Historical Volatility Rank (IVR Proxy)</h3>
+      ${hvr !== null ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;color:var(--muted)">HVR</span>
+          <span style="font-size:22px;font-weight:700;color:${ivrColor(hvr)}">${hvr.toFixed(0)}</span>
+          <span style="font-size:12px;color:${ivrColor(hvr)}">${ivr.ivr_label}</span>
+        </div>
+        <div class="ivr-gauge-wrap">
+          <div class="ivr-gauge-fill" style="width:${hvr}%;background:${ivrGradient(hvr)}"></div>
+          <div class="ivr-gauge-marker" style="left:${hvr}%"></div>
+        </div>
+        <div class="ivr-zones">
+          <span>0 Cheap</span>
+          <span>30</span>
+          <span>50 Sweet spot</span>
+          <span>70</span>
+          <span>85 Extreme 100</span>
+        </div>
+        <div class="ivr-metrics">
+          <div class="ivr-metric">
+            <div class="im-label">30d HV</div>
+            <div class="im-value" style="color:${ivrColor(hvr)}">${ivr.hv_30d}%</div>
+          </div>
+          <div class="ivr-metric">
+            <div class="im-label">10d HV</div>
+            <div class="im-value" style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.hv_10d}%</div>
+          </div>
+          <div class="ivr-metric">
+            <div class="im-label">52w High</div>
+            <div class="im-value" style="color:var(--muted)">${ivr.hv_52w_high}%</div>
+          </div>
+          <div class="ivr-metric">
+            <div class="im-label">52w Low</div>
+            <div class="im-value" style="color:var(--muted)">${ivr.hv_52w_low}%</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--chop)">
+          📊 ${ivr.sell_strategy}
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--muted)">
+          Vol trend: <span style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.vol_trend}</span>
+          &nbsp;·&nbsp; HVR = (30d HV − 52w low) ÷ (52w high − 52w low) × 100 &nbsp;·&nbsp; IVR proxy using MSTR realized vol
+        </div>
+      ` : `<div style="color:var(--muted);font-size:12px">MSTR HVR data unavailable</div>`}
+    </div>
+
+    <!-- Probability bars -->
     <div class="prob-section">
-      <h3>State Probabilities (Latest Day)</h3>
+      <h3>BTC Regime State Probabilities</h3>
       <div class="prob-row">
         <div class="prob-label">
           <span style="color:var(--bull)">🟢 Bull</span>
           <span>${(d.bull_probability*100).toFixed(1)}%</span>
         </div>
-        <div class="prob-bar-bg">
-          <div class="prob-bar-fill bull-fill" style="width:${d.bull_probability*100}%"></div>
-        </div>
+        <div class="prob-bar-bg"><div class="prob-bar-fill bull-fill" style="width:${d.bull_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
         <div class="prob-label">
           <span style="color:var(--chop)">🟡 Chop</span>
           <span>${(d.chop_probability*100).toFixed(1)}%</span>
         </div>
-        <div class="prob-bar-bg">
-          <div class="prob-bar-fill chop-fill" style="width:${d.chop_probability*100}%"></div>
-        </div>
+        <div class="prob-bar-bg"><div class="prob-bar-fill chop-fill" style="width:${d.chop_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
         <div class="prob-label">
           <span style="color:var(--bear)">🔴 Bear</span>
           <span>${(d.bear_probability*100).toFixed(1)}%</span>
         </div>
-        <div class="prob-bar-bg">
-          <div class="prob-bar-fill bear-fill" style="width:${d.bear_probability*100}%"></div>
+        <div class="prob-bar-bg"><div class="prob-bar-fill bear-fill" style="width:${d.bear_probability*100}%"></div></div>
+      </div>
+    </div>
+
+    <!-- BTC metrics row -->
+    <div class="two-col">
+      <div class="card">
+        <div class="label">3-Day Momentum</div>
+        <div class="value" style="color:${d.momentum_3d_pct>=0?'var(--bull)':'var(--bear)'}">
+          ${d.momentum_3d_pct>0?"+":""}${d.momentum_3d_pct}%
         </div>
+        <div class="sub">BTC 3-day price change</div>
       </div>
-    </div>
-
-    <!-- 90-Day History Chart -->
-    <div class="chart-section">
-      <h3>90-Day Regime History — BTC Close + State Probabilities</h3>
-      <div class="chart-wrap">
-        <canvas id="regimeChart"></canvas>
-      </div>
-    </div>
-
-    <!-- BTC Metrics -->
-    <div class="metrics-grid">
-      <div class="metric-item">
-        <div class="m-label">Realized Vol (7D ann.)</div>
-        <div class="m-value" style="color:${d.realized_vol_7d > 80 ? "var(--bear)" : d.realized_vol_7d > 50 ? "var(--chop)" : "var(--bull)"}">
+      <div class="card">
+        <div class="label">BTC Realized Vol (7D)</div>
+        <div class="value" style="color:${d.realized_vol_7d>80?'var(--bear)':d.realized_vol_7d>50?'var(--chop)':'var(--bull)'}">
           ${d.realized_vol_7d}%
         </div>
-      </div>
-      <div class="metric-item">
-        <div class="m-label">3-Day Momentum</div>
-        <div class="m-value" style="color:${d.momentum_3d_pct >= 0 ? "var(--bull)" : "var(--bear)"}">
-          ${d.momentum_3d_pct > 0 ? "+" : ""}${d.momentum_3d_pct}%
-        </div>
-      </div>
-      <div class="metric-item">
-        <div class="m-label">BTC vs MA20</div>
-        <div class="m-value" style="color:${d.btc_ma20_distance_pct >= 0 ? "var(--bull)" : "var(--bear)"}">
-          ${d.btc_ma20_distance_pct > 0 ? "+" : ""}${d.btc_ma20_distance_pct}%
-        </div>
-      </div>
-      <div class="metric-item">
-        <div class="m-label">MA20 Level</div>
-        <div class="m-value">$${d.btc_ma20.toLocaleString()}</div>
+        <div class="sub">Annualized</div>
       </div>
     </div>
 
-    <!-- Transition Matrix -->
+    <!-- 90-day chart -->
+    <div class="chart-section">
+      <h3>90-Day Regime History — BTC Close + State Probabilities</h3>
+      <div class="chart-wrap"><canvas id="regimeChart"></canvas></div>
+    </div>
+
+    <!-- Transition matrix -->
     <div class="matrix-section">
-      <h3>Transition Matrix — Probability of Moving Between Regimes</h3>
+      <h3>Transition Matrix — Regime-to-Regime Probabilities</h3>
       <table>
         <thead>
           <tr>
@@ -375,12 +356,10 @@ function render(d) {
           </tr>
         </thead>
         <tbody>
-          ${["Bull","Chop","Bear"].map((label, i) => `
+          ${["Bull","Chop","Bear"].map((lbl,i)=>`
           <tr>
-            <td class="from-label" style="color:${stateColor(label)}">From ${label}</td>
-            ${d.transition_matrix[i].map(p => `
-              <td class="${probClass(p)}">${(p*100).toFixed(1)}%</td>
-            `).join("")}
+            <td class="from-label" style="color:${stateColor(lbl)}">From ${lbl}</td>
+            ${d.transition_matrix[i].map(p=>`<td class="${pClass(p)}">${(p*100).toFixed(1)}%</td>`).join("")}
           </tr>`).join("")}
         </tbody>
       </table>
@@ -388,117 +367,45 @@ function render(d) {
   `;
 
   document.getElementById("main-content").innerHTML = html;
-
-  // ── Draw Chart ──
   drawChart(d.history);
 }
 
 function drawChart(history) {
-  const labels    = history.map(h => h.date.slice(5));   // MM-DD
+  const labels    = history.map(h => h.date.slice(5));
   const closes    = history.map(h => h.close);
   const bullProbs = history.map(h => h.bull_prob * 100);
   const bearProbs = history.map(h => h.bear_prob * 100);
   const chopProbs = history.map(h => h.chop_prob * 100);
 
-  // Background color per regime
-  const bgColors = history.map(h => {
-    if (h.state === "Bull") return "rgba(0,255,204,0.08)";
-    if (h.state === "Chop") return "rgba(250,204,21,0.08)";
-    return "rgba(248,113,113,0.08)";
-  });
-
   const ctx = document.getElementById("regimeChart").getContext("2d");
-
   new Chart(ctx, {
     type: "line",
     data: {
       labels,
       datasets: [
-        {
-          label: "BTC Close",
-          data: closes,
-          borderColor: "#94a3b8",
-          borderWidth: 1.5,
-          pointRadius: 0,
-          yAxisID: "yBTC",
-          tension: 0.3,
-        },
-        {
-          label: "Bull %",
-          data: bullProbs,
-          borderColor: "rgba(0,255,204,0.8)",
-          borderWidth: 1.5,
-          pointRadius: 0,
-          yAxisID: "yProb",
-          tension: 0.3,
-          fill: false,
-        },
-        {
-          label: "Chop %",
-          data: chopProbs,
-          borderColor: "rgba(250,204,21,0.8)",
-          borderWidth: 1,
-          borderDash: [4, 3],
-          pointRadius: 0,
-          yAxisID: "yProb",
-          tension: 0.3,
-          fill: false,
-        },
-        {
-          label: "Bear %",
-          data: bearProbs,
-          borderColor: "rgba(248,113,113,0.8)",
-          borderWidth: 1.5,
-          pointRadius: 0,
-          yAxisID: "yProb",
-          tension: 0.3,
-          fill: false,
-        },
-      ],
+        { label:"BTC Close", data:closes, borderColor:"#94a3b8", borderWidth:1.5, pointRadius:0, yAxisID:"yBTC", tension:0.3 },
+        { label:"Bull %",    data:bullProbs, borderColor:"rgba(0,255,204,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3 },
+        { label:"Chop %",    data:chopProbs, borderColor:"rgba(250,204,21,.7)", borderWidth:1, borderDash:[4,3], pointRadius:0, yAxisID:"yProb", tension:0.3 },
+        { label:"Bear %",    data:bearProbs, borderColor:"rgba(248,113,113,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3 },
+      ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
-      plugins: {
-        legend: {
-          labels: { color: "#64748b", font: { size: 10 }, boxWidth: 12 }
-        },
-        tooltip: {
-          backgroundColor: "#0f1318",
-          borderColor: "#1c2230",
-          borderWidth: 1,
-          titleColor: "#e2e8f0",
-          bodyColor: "#94a3b8",
-          callbacks: {
-            label: ctx => {
-              const v = ctx.parsed.y;
-              if (ctx.dataset.label === "BTC Close") return ` BTC $${v.toLocaleString()}`;
-              return ` ${ctx.dataset.label}: ${v.toFixed(1)}%`;
-            }
-          }
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:"index", intersect:false },
+      plugins:{
+        legend:{ labels:{ color:"#64748b", font:{size:10}, boxWidth:12 } },
+        tooltip:{
+          backgroundColor:"#0f1318", borderColor:"#1c2230", borderWidth:1,
+          titleColor:"#e2e8f0", bodyColor:"#94a3b8",
+          callbacks:{ label: ctx => ctx.dataset.label==="BTC Close"
+            ? ` BTC $${ctx.parsed.y.toLocaleString()}`
+            : ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` }
         }
       },
-      scales: {
-        x: {
-          ticks: { color: "#475569", font: { size: 9 }, maxTicksLimit: 12 },
-          grid:  { color: "#1c2230" }
-        },
-        yBTC: {
-          type: "linear",
-          position: "left",
-          ticks: { color: "#475569", font: { size: 9 },
-                   callback: v => `$${(v/1000).toFixed(0)}k` },
-          grid: { color: "#1c2230" }
-        },
-        yProb: {
-          type: "linear",
-          position: "right",
-          min: 0, max: 100,
-          ticks: { color: "#475569", font: { size: 9 },
-                   callback: v => `${v}%` },
-          grid: { drawOnChartArea: false }
-        }
+      scales:{
+        x:{ ticks:{ color:"#475569", font:{size:9}, maxTicksLimit:12 }, grid:{ color:"#1c2230" } },
+        yBTC:{ type:"linear", position:"left", ticks:{ color:"#475569", font:{size:9}, callback:v=>`$${(v/1000).toFixed(0)}k` }, grid:{ color:"#1c2230" } },
+        yProb:{ type:"linear", position:"right", min:0, max:100, ticks:{ color:"#475569", font:{size:9}, callback:v=>`${v}%` }, grid:{ drawOnChartArea:false } }
       }
     }
   });
@@ -509,8 +416,8 @@ loadData();
 
 <div class="container">
   <div class="footer">
-    Not financial advice · BTC-USD data via Yahoo Finance · Model retrained monthly
-    · GitHub Actions updates pre-market (08:00 ET) and post-close (16:30 ET)
+    Not financial advice · BTC-USD + MSTR data via Yahoo Finance · HVR = IVR proxy (30d realized vol rank)
+    · GitHub Actions: pre-market 08:00 ET + post-close 16:30 ET weekdays
   </div>
 </div>
 </body>
