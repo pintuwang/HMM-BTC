@@ -45,10 +45,12 @@ def fetch_data(ticker: str, days: int) -> dict:
                         end=end.strftime("%Y-%m-%d"), progress=False, auto_adjust=True)
     if df.empty:
         raise ValueError(f"No data returned for {ticker}")
+    if hasattr(df.columns, 'levels'):
+        df.columns = df.columns.get_level_values(0)
     df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
     df.dropna(inplace=True)
     return df
-
+    
 
 # ─────────────────────────────────────────────
 # STEP 2 — FEATURE ENGINEERING
