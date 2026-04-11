@@ -1,0 +1,5 @@
+yfinance>=0.2.38
+hmmlearn>=0.3.2
+scikit-learn>=1.4.0
+numpy>=1.26.0
+pandas>=2.2.0

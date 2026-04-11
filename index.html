@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BTC 3-State HMM Regime Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bull:   #00ffcc;
+    --chop:   #facc15;
+    --bear:   #f87171;
+    --orange: #f97316;
+    --bg:     #080b0f;
+    --card:   #0f1318;
+    --border: #1c2230;
+    --text:   #e2e8f0;
+    --muted:  #64748b;
+    --green:  #4ade80;
+    --red:    #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    padding: 20px 16px 48px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header { margin-bottom: 28px; }
+  .header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--bull);
+    letter-spacing: -0.5px;
+  }
+  .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .updated  { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* ── Alert banner ── */
+  .alert {
+    background: #2d1200;
+    border: 1px solid var(--orange);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--orange);
+    display: none;
+  }
+  .alert.visible { display: block; }
+
+  /* ── Stat grid ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+  .stat-card .sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── State pill ── */
+  .state-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .state-pill.Bull  { background: rgba(0,255,204,0.15); color: var(--bull);  border: 1px solid var(--bull); }
+  .state-pill.Chop  { background: rgba(250,204,21,0.15); color: var(--chop); border: 1px solid var(--chop); }
+  .state-pill.Bear  { background: rgba(248,113,113,0.15); color: var(--bear); border: 1px solid var(--bear); }
+
+  /* ── Signal traffic light ── */
+  .signal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .signal-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+  }
+  .signal-dot.GREEN  { background: rgba(74,222,128,0.2);  border: 2px solid #4ade80; color: #4ade80; }
+  .signal-dot.YELLOW { background: rgba(250,204,21,0.2);  border: 2px solid var(--chop); color: var(--chop); }
+  .signal-dot.ORANGE { background: rgba(249,115,22,0.2);  border: 2px solid var(--orange); color: var(--orange); }
+  .signal-dot.RED    { background: rgba(248,113,113,0.2); border: 2px solid var(--bear); color: var(--bear); }
+
+  .signal-text h2 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .signal-text p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .signal-text .caution { font-size: 11px; color: var(--orange); margin-top: 6px; }
+
+  /* ── Probability bar ── */
+  .prob-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .prob-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
+
+  .prob-row { margin-bottom: 12px; }
+  .prob-row:last-child { margin-bottom: 0; }
+  .prob-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  .prob-bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .bull-fill  { background: var(--bull); }
+  .chop-fill  { background: var(--chop); }
+  .bear-fill  { background: var(--bear); }
+
+  /* ── Transition matrix ── */
+  .matrix-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .matrix-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { padding: 6px 10px; color: var(--muted); font-weight: 600; text-align: center; }
+  td { padding: 7px 10px; text-align: center; border: 1px solid var(--border); }
+  td.from-label { color: var(--muted); text-align: left; font-size: 11px; }
+  .high-prob { color: var(--bull); font-weight: 700; }
+  .med-prob  { color: var(--chop); }
+  .low-prob  { color: var(--muted); }
+
+  /* ── Chart ── */
+  .chart-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .chart-section h3 { font-size: 11px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; }
+  .chart-wrap { position: relative; height: 240px; }
+
+  /* ── BTC metrics ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .metric-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .metric-item .m-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+  .metric-item .m-value { font-size: 16px; font-weight: 700; margin-top: 4px; }
+
+  /* ── Footer ── */
+  .footer { font-size: 10px; color: #334155; text-align: center; margin-top: 24px; }
+
+  .loading { text-align: center; padding: 60px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>₿ BTC 3-State HMM Regime Tracker</h1>
+    <p>Bull / Chop / Bear detection via Gaussian HMM · Yahoo Finance data · 2-year training window</p>
+    <div class="updated" id="updated">Loading...</div>
+  </div>
+
+  <!-- Alert Banner -->
+  <div class="alert" id="alert-banner">
+    ⚠️ REGIME CHANGE ALERT — Bear probability crossed 30% threshold. Review open positions immediately.
+  </div>
+
+  <div id="main-content" class="loading">Fetching regime data...</div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// Load JSON and render dashboard
+// ─────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res  = await fetch(`data/hmm_output.json?t=${Date.now()}`);
+    if (!res.ok) throw new Error("JSON not found");
+    const d    = await res.json();
+    render(d);
+  } catch (e) {
+    document.getElementById("main-content").innerHTML =
+      `<div class="loading" style="color:#f87171">⚠️ Could not load HMM data.<br>${e.message}<br><br>
+      Run <code>python generate_hmm.py</code> first to generate data/hmm_output.json</div>`;
+  }
+}
+
+function stateColor(s) {
+  return s === "Bull" ? "var(--bull)" : s === "Chop" ? "var(--chop)" : "var(--bear)";
+}
+
+function signalColor(sig) {
+  const map = { GREEN: "#4ade80", YELLOW: "var(--chop)", ORANGE: "var(--orange)", RED: "var(--bear)" };
+  return map[sig] || "var(--muted)";
+}
+
+function probClass(p) {
+  if (p >= 0.6) return "high-prob";
+  if (p >= 0.3) return "med-prob";
+  return "low-prob";
+}
+
+function render(d) {
+  // Update timestamp
+  document.getElementById("updated").textContent =
+    `Last updated: ${d.generated_at}  ·  Data through: ${d.latest_date}`;
+
+  // Alert banner
+  if (d.regime_change_alert) {
+    const banner = document.getElementById("alert-banner");
+    banner.classList.add("visible");
+  }
+
+  const rec = d.recommendation;
+
+  const html = `
+    <!-- State + Signal Row -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Current Regime</div>
+        <div class="value" style="color:${stateColor(d.current_state)}">${d.current_state}</div>
+        <div class="sub">Day ${d.days_in_current_state} in regime</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Confidence</div>
+        <div class="value" style="color:${stateColor(d.current_state)}">${(d.state_confidence*100).toFixed(0)}%</div>
+        <div class="sub">State posterior prob</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">BTC Close</div>
+        <div class="value" style="color:#e2e8f0">$${d.btc_close.toLocaleString()}</div>
+        <div class="sub">vs MA20: ${d.btc_ma20_distance_pct > 0 ? "+" : ""}${d.btc_ma20_distance_pct}%</div>
+      </div>
+    </div>
+
+    <!-- Options Signal Card -->
+    <div class="signal-card">
+      <div class="signal-dot ${rec.signal}">${rec.signal[0]}</div>
+      <div class="signal-text">
+        <h2 style="color:${signalColor(rec.signal)}">${rec.signal} — ${rec.action}</h2>
+        <p>Strike guidance: ${rec.strike_adj}</p>
+        <div class="caution">⚠ ${rec.caution}</div>
+      </div>
+    </div>
+
+    <!-- Probability Bars -->
+    <div class="prob-section">
+      <h3>State Probabilities (Latest Day)</h3>
+      <div class="prob-row">
+        <div class="prob-label">
+          <span style="color:var(--bull)">🟢 Bull</span>
+          <span>${(d.bull_probability*100).toFixed(1)}%</span>
+        </div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill bull-fill" style="width:${d.bull_probability*100}%"></div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-label">
+          <span style="color:var(--chop)">🟡 Chop</span>
+          <span>${(d.chop_probability*100).toFixed(1)}%</span>
+        </div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill chop-fill" style="width:${d.chop_probability*100}%"></div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-label">
+          <span style="color:var(--bear)">🔴 Bear</span>
+          <span>${(d.bear_probability*100).toFixed(1)}%</span>
+        </div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill bear-fill" style="width:${d.bear_probability*100}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 90-Day History Chart -->
+    <div class="chart-section">
+      <h3>90-Day Regime History — BTC Close + State Probabilities</h3>
+      <div class="chart-wrap">
+        <canvas id="regimeChart"></canvas>
+      </div>
+    </div>
+
+    <!-- BTC Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-item">
+        <div class="m-label">Realized Vol (7D ann.)</div>
+        <div class="m-value" style="color:${d.realized_vol_7d > 80 ? "var(--bear)" : d.realized_vol_7d > 50 ? "var(--chop)" : "var(--bull)"}">
+          ${d.realized_vol_7d}%
+        </div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">3-Day Momentum</div>
+        <div class="m-value" style="color:${d.momentum_3d_pct >= 0 ? "var(--bull)" : "var(--bear)"}">
+          ${d.momentum_3d_pct > 0 ? "+" : ""}${d.momentum_3d_pct}%
+        </div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">BTC vs MA20</div>
+        <div class="m-value" style="color:${d.btc_ma20_distance_pct >= 0 ? "var(--bull)" : "var(--bear)"}">
+          ${d.btc_ma20_distance_pct > 0 ? "+" : ""}${d.btc_ma20_distance_pct}%
+        </div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">MA20 Level</div>
+        <div class="m-value">$${d.btc_ma20.toLocaleString()}</div>
+      </div>
+    </div>
+
+    <!-- Transition Matrix -->
+    <div class="matrix-section">
+      <h3>Transition Matrix — Probability of Moving Between Regimes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th style="color:var(--bull)">→ Bull</th>
+            <th style="color:var(--chop)">→ Chop</th>
+            <th style="color:var(--bear)">→ Bear</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${["Bull","Chop","Bear"].map((label, i) => `
+          <tr>
+            <td class="from-label" style="color:${stateColor(label)}">From ${label}</td>
+            ${d.transition_matrix[i].map(p => `
+              <td class="${probClass(p)}">${(p*100).toFixed(1)}%</td>
+            `).join("")}
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById("main-content").innerHTML = html;
+
+  // ── Draw Chart ──
+  drawChart(d.history);
+}
+
+function drawChart(history) {
+  const labels    = history.map(h => h.date.slice(5));   // MM-DD
+  const closes    = history.map(h => h.close);
+  const bullProbs = history.map(h => h.bull_prob * 100);
+  const bearProbs = history.map(h => h.bear_prob * 100);
+  const chopProbs = history.map(h => h.chop_prob * 100);
+
+  // Background color per regime
+  const bgColors = history.map(h => {
+    if (h.state === "Bull") return "rgba(0,255,204,0.08)";
+    if (h.state === "Chop") return "rgba(250,204,21,0.08)";
+    return "rgba(248,113,113,0.08)";
+  });
+
+  const ctx = document.getElementById("regimeChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "BTC Close",
+          data: closes,
+          borderColor: "#94a3b8",
+          borderWidth: 1.5,
+          pointRadius: 0,
+          yAxisID: "yBTC",
+          tension: 0.3,
+        },
+        {
+          label: "Bull %",
+          data: bullProbs,
+          borderColor: "rgba(0,255,204,0.8)",
+          borderWidth: 1.5,
+          pointRadius: 0,
+          yAxisID: "yProb",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: "Chop %",
+          data: chopProbs,
+          borderColor: "rgba(250,204,21,0.8)",
+          borderWidth: 1,
+          borderDash: [4, 3],
+          pointRadius: 0,
+          yAxisID: "yProb",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: "Bear %",
+          data: bearProbs,
+          borderColor: "rgba(248,113,113,0.8)",
+          borderWidth: 1.5,
+          pointRadius: 0,
+          yAxisID: "yProb",
+          tension: 0.3,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          labels: { color: "#64748b", font: { size: 10 }, boxWidth: 12 }
+        },
+        tooltip: {
+          backgroundColor: "#0f1318",
+          borderColor: "#1c2230",
+          borderWidth: 1,
+          titleColor: "#e2e8f0",
+          bodyColor: "#94a3b8",
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              if (ctx.dataset.label === "BTC Close") return ` BTC $${v.toLocaleString()}`;
+              return ` ${ctx.dataset.label}: ${v.toFixed(1)}%`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "#475569", font: { size: 9 }, maxTicksLimit: 12 },
+          grid:  { color: "#1c2230" }
+        },
+        yBTC: {
+          type: "linear",
+          position: "left",
+          ticks: { color: "#475569", font: { size: 9 },
+                   callback: v => `$${(v/1000).toFixed(0)}k` },
+          grid: { color: "#1c2230" }
+        },
+        yProb: {
+          type: "linear",
+          position: "right",
+          min: 0, max: 100,
+          ticks: { color: "#475569", font: { size: 9 },
+                   callback: v => `${v}%` },
+          grid: { drawOnChartArea: false }
+        }
+      }
+    }
+  });
+}
+
+loadData();
+</script>
+
+<div class="container">
+  <div class="footer">
+    Not financial advice · BTC-USD data via Yahoo Finance · Model retrained monthly
+    · GitHub Actions updates pre-market (08:00 ET) and post-close (16:30 ET)
+  </div>
+</div>
+</body>
+</html>
