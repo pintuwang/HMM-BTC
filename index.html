@@ -3,409 +3,411 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>BTC HMM + IVR Tracker</title>
+<title>BTC HMM + IVR + Strategy Scorer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bull:   #00ffcc;
-    --chop:   #facc15;
-    --bear:   #f87171;
-    --orange: #f97316;
-    --bg:     #080b0f;
-    --card:   #0f1318;
-    --border: #1c2230;
-    --text:   #e2e8f0;
-    --muted:  #64748b;
-    --green:  #4ade80;
-    --red:    #f87171;
+    --bull:#00ffcc; --chop:#facc15; --bear:#f87171; --orange:#f97316;
+    --bg:#080b0f; --card:#0f1318; --border:#1c2230;
+    --text:#e2e8f0; --muted:#64748b; --green:#4ade80;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', 'Courier New', monospace;
-    padding: 20px 16px 48px;
-  }
-  .container { max-width: 860px; margin: 0 auto; }
-  .header { margin-bottom: 24px; }
-  .header h1 { font-size: 20px; font-weight: 700; color: var(--bull); }
-  .header p  { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .updated   { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--text); font-family:'IBM Plex Mono','Courier New',monospace; padding:20px 16px 60px; }
+  .container{ max-width:880px; margin:0 auto; }
+  .header{ margin-bottom:22px; }
+  .header h1{ font-size:20px; font-weight:700; color:var(--bull); }
+  .header p { font-size:12px; color:var(--muted); margin-top:4px; }
+  .updated  { font-size:11px; color:var(--muted); margin-top:6px; }
 
-  .alert {
-    background: #2d1200; border: 1px solid var(--orange);
-    border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;
-    font-size: 13px; color: var(--orange); display: none;
-  }
-  .alert.visible { display: block; }
+  .alert{ background:#2d1200; border:1px solid var(--orange); border-radius:8px;
+          padding:12px 16px; margin-bottom:18px; font-size:13px; color:var(--orange); display:none; }
+  .alert.visible{ display:block; }
 
   /* grids */
-  .stat-grid {
-    display: grid; grid-template-columns: repeat(3,1fr);
-    gap: 10px; margin-bottom: 14px;
-  }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  @media(max-width:560px){ .stat-grid,.two-col{ grid-template-columns:1fr 1fr; } }
+  .g3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .g2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+  @media(max-width:560px){ .g3,.g2{ grid-template-columns:1fr 1fr; } }
 
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-  }
-  .card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .card .value { font-size: 22px; font-weight: 700; margin-top: 6px; }
-  .card .sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .card .lbl{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .card .val{ font-size:22px; font-weight:700; margin-top:6px; }
+  .card .sub{ font-size:11px; color:var(--muted); margin-top:3px; }
+
+  /* section wrapper */
+  .section{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
+  .section h3{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px; }
 
   /* signal */
-  .signal-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
-    display: flex; gap: 14px; align-items: flex-start;
-  }
-  .signal-dot {
-    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 900;
-  }
-  .signal-dot.GREEN  { background:rgba(74,222,128,.2);  border:2px solid #4ade80; color:#4ade80; }
-  .signal-dot.YELLOW { background:rgba(250,204,21,.2);  border:2px solid var(--chop); color:var(--chop); }
-  .signal-dot.ORANGE { background:rgba(249,115,22,.2);  border:2px solid var(--orange); color:var(--orange); }
-  .signal-dot.RED    { background:rgba(248,113,113,.2); border:2px solid var(--bear); color:var(--bear); }
-  .signal-text h2    { font-size:14px; font-weight:700; margin-bottom:4px; }
-  .signal-text p     { font-size:12px; color:var(--muted); line-height:1.6; }
-  .signal-text .caution    { font-size:11px; color:var(--orange); margin-top:5px; }
-  .signal-text .coveredcall{ font-size:11px; color:var(--chop); margin-top:5px; border-top:1px solid var(--border); padding-top:6px; }
+  .signal-card{ background:var(--card); border:1px solid var(--border); border-radius:10px;
+                padding:16px 18px; margin-bottom:14px; display:flex; gap:14px; align-items:flex-start; }
+  .sdot{ width:44px; height:44px; border-radius:50%; flex-shrink:0; display:flex;
+         align-items:center; justify-content:center; font-size:16px; font-weight:900; }
+  .sdot.GREEN { background:rgba(74,222,128,.2);  border:2px solid #4ade80; color:#4ade80; }
+  .sdot.YELLOW{ background:rgba(250,204,21,.2);  border:2px solid var(--chop); color:var(--chop); }
+  .sdot.ORANGE{ background:rgba(249,115,22,.2);  border:2px solid var(--orange); color:var(--orange); }
+  .sdot.RED   { background:rgba(248,113,113,.2); border:2px solid var(--bear); color:var(--bear); }
+  .stxt h2   { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .stxt p    { font-size:12px; color:var(--muted); line-height:1.6; }
+  .stxt .caut{ font-size:11px; color:var(--orange); margin-top:5px; }
+  .stxt .cc  { font-size:11px; color:var(--chop); margin-top:5px; border-top:1px solid var(--border); padding-top:6px; }
 
-  /* IVR panel */
-  .ivr-panel {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
+  /* ── 5-approach scorer ── */
+  .approach-row{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--border);
   }
-  .ivr-panel h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
-  .ivr-gauge-wrap { position:relative; height:18px; background:var(--border); border-radius:9px; overflow:hidden; margin-bottom:10px; }
-  .ivr-gauge-fill { height:100%; border-radius:9px; transition:width .6s ease; }
-  .ivr-gauge-marker {
-    position:absolute; top:-2px; width:3px; height:22px;
-    background:#fff; border-radius:2px; transform:translateX(-50%);
-  }
-  .ivr-zones {
-    display:flex; justify-content:space-between;
-    font-size:9px; color:var(--muted); margin-bottom:12px;
-  }
-  .ivr-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-  .ivr-metric  { background:var(--bg); border-radius:6px; padding:8px 10px; }
-  .ivr-metric .im-label { font-size:9px; color:var(--muted); text-transform:uppercase; }
-  .ivr-metric .im-value { font-size:14px; font-weight:700; margin-top:3px; }
+  .approach-row:last-child{ border-bottom:none; }
+  .approach-row.recommended{ background:rgba(0,255,204,.04); border-radius:8px; padding:12px; margin:-2px; }
 
-  /* bear trend mini chart */
-  .trend-row { display:flex; align-items:center; gap:8px; margin-top:8px; }
-  .trend-dot  { width:8px; height:8px; border-radius:50%; }
-  .trend-label{ font-size:11px; color:var(--muted); }
-  .mini-bars  { display:flex; align-items:flex-end; gap:2px; height:24px; }
-  .mini-bar   { width:10px; border-radius:2px 2px 0 0; }
+  .ap-rank{ font-size:18px; font-weight:700; width:28px; flex-shrink:0; text-align:center; margin-top:2px; }
+  .ap-body{ flex:1; }
+  .ap-name{ font-size:13px; font-weight:700; margin-bottom:4px; }
+  .ap-action{ font-size:11px; color:var(--muted); margin-bottom:6px; line-height:1.5; }
+  .ap-reasons{ font-size:10px; color:#475569; }
+
+  .ap-right{ text-align:right; flex-shrink:0; width:80px; }
+  .ap-pct{ font-size:22px; font-weight:700; }
+  .ap-score-label{ font-size:10px; color:var(--muted); margin-top:2px; }
+  .ap-bar-wrap{ height:6px; background:var(--border); border-radius:3px; margin-top:6px; overflow:hidden; }
+  .ap-bar-fill{ height:100%; border-radius:3px; transition:width .6s ease; }
+
+  .rec-badge{
+    display:inline-block; padding:2px 8px; border-radius:10px;
+    font-size:9px; font-weight:700; letter-spacing:.5px;
+    background:rgba(0,255,204,.15); color:var(--bull); border:1px solid var(--bull);
+    margin-left:8px; vertical-align:middle;
+  }
+
+  /* ── Backtest table ── */
+  .bt-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .bt-table th{ padding:7px 10px; color:var(--muted); font-weight:600; text-align:left; font-size:10px; text-transform:uppercase; border-bottom:1px solid var(--border); }
+  .bt-table td{ padding:8px 10px; border-bottom:1px solid #111; }
+  .bt-table tr:last-child td{ border-bottom:none; }
+  .wr-bar-wrap{ height:6px; background:var(--border); border-radius:3px; margin-top:4px; overflow:hidden; }
+  .wr-bar-fill{ height:100%; border-radius:3px; }
+  .rank-1{ color:var(--bull); font-weight:700; }
+  .rank-2{ color:var(--chop); }
+  .rank-3{ color:var(--muted); }
+
+  /* IVR gauge */
+  .ivr-gauge-wrap{ position:relative; height:18px; background:var(--border); border-radius:9px; overflow:hidden; margin-bottom:8px; }
+  .ivr-gauge-fill{ height:100%; border-radius:9px; transition:width .6s ease; }
+  .ivr-zones{ display:flex; justify-content:space-between; font-size:9px; color:var(--muted); margin-bottom:10px; }
+  .ivr-metrics{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; }
+  .ivr-m{ background:var(--bg); border-radius:6px; padding:8px 10px; }
+  .ivr-m .iml{ font-size:9px; color:var(--muted); text-transform:uppercase; }
+  .ivr-m .imv{ font-size:14px; font-weight:700; margin-top:3px; }
 
   /* prob bars */
-  .prob-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
-  .prob-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
-  .prob-row { margin-bottom:10px; }
-  .prob-row:last-child { margin-bottom:0; }
-  .prob-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
-  .prob-bar-bg { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
-  .prob-bar-fill { height:100%; border-radius:4px; transition:width .6s ease; }
-  .bull-fill { background:var(--bull); }
-  .chop-fill { background:var(--chop); }
-  .bear-fill { background:var(--bear); }
+  .prob-row{ margin-bottom:10px; }
+  .prob-row:last-child{ margin-bottom:0; }
+  .prob-label{ display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
+  .pb-bg{ height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .pb-fill{ height:100%; border-radius:4px; transition:width .6s ease; }
+  .bull-f{ background:var(--bull); } .chop-f{ background:var(--chop); } .bear-f{ background:var(--bear); }
 
   /* chart */
-  .chart-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
-  .chart-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
-  .chart-wrap { position:relative; height:240px; }
+  .chart-wrap{ position:relative; height:230px; }
 
   /* matrix */
-  .matrix-section { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
-  .matrix-section h3 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
-  table { width:100%; border-collapse:collapse; font-size:12px; }
-  th { padding:6px 8px; color:var(--muted); font-weight:600; text-align:center; }
-  td { padding:7px 8px; text-align:center; border:1px solid var(--border); }
-  td.from-label { color:var(--muted); text-align:left; font-size:11px; }
-  .high-prob { color:var(--bull); font-weight:700; }
-  .med-prob  { color:var(--chop); }
-  .low-prob  { color:var(--muted); }
+  table.mat{ width:100%; border-collapse:collapse; font-size:12px; }
+  table.mat th{ padding:6px 8px; color:var(--muted); font-weight:600; text-align:center; }
+  table.mat td{ padding:7px 8px; text-align:center; border:1px solid var(--border); }
+  td.fl{ color:var(--muted); text-align:left; font-size:11px; }
+  .hp{ color:var(--bull); font-weight:700; } .mp{ color:var(--chop); } .lp{ color:var(--muted); }
 
-  .footer { font-size:10px; color:#334155; text-align:center; margin-top:24px; }
-  .loading { text-align:center; padding:60px; color:var(--muted); font-size:14px; }
+  /* mini bars */
+  .mini-bars{ display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .mini-bar{ width:10px; border-radius:2px 2px 0 0; }
+
+  .footer{ font-size:10px; color:#334155; text-align:center; margin-top:24px; }
+  .loading{ text-align:center; padding:60px; color:var(--muted); font-size:14px; }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>₿ BTC HMM + MSTR IVR Tracker</h1>
-    <p>3-State Regime (Bull/Chop/Bear) · MSTR Historical Vol Rank · Combined options strategy signal</p>
+    <h1>₿ BTC HMM · IVR · 5-Strategy Scorer</h1>
+    <p>3-State Regime · MSTR Vol Rank · 5 Premium Strategies Scored + Backtested</p>
     <div class="updated" id="updated">Loading...</div>
   </div>
-
-  <div class="alert" id="alert-banner">
-    ⚠️ REGIME CHANGE ALERT — Bear probability crossed 30% threshold. Review open positions.
-  </div>
-
-  <div id="main-content" class="loading">Fetching regime + IVR data...</div>
+  <div class="alert" id="alert-banner">⚠️ REGIME CHANGE ALERT — Bear prob crossed 30%. Review positions.</div>
+  <div id="main" class="loading">Fetching data...</div>
 </div>
 
 <script>
-async function loadData() {
-  try {
-    const res = await fetch(`data/hmm_output.json?t=${Date.now()}`);
-    if (!res.ok) throw new Error("JSON not found — run python generate_hmm.py first");
-    const d = await res.json();
-    render(d);
-  } catch(e) {
-    document.getElementById("main-content").innerHTML =
-      `<div class="loading" style="color:#f87171">⚠️ ${e.message}</div>`;
+const SC = s => s==="Bull"?"var(--bull)":s==="Chop"?"var(--chop)":"var(--bear)";
+const SIG = s => ({GREEN:"#4ade80",YELLOW:"var(--chop)",ORANGE:"var(--orange)",RED:"var(--bear)"}[s]||"var(--muted)");
+const PC  = p => p>=.6?"hp":p>=.3?"mp":"lp";
+
+function ivrColor(h){ return h<30?"var(--muted)":h<50?"var(--chop)":h<70?"var(--bull)":h<85?"var(--orange)":"var(--bear)"; }
+function ivrGrad(h) { return h<30?"#475569":h<50?"var(--chop)":h<70?"var(--bull)":h<85?"var(--orange)":"var(--bear)"; }
+
+function approachColor(score){
+  if(score>=70) return "var(--bull)";
+  if(score>=45) return "var(--chop)";
+  if(score>=25) return "var(--orange)";
+  return "var(--muted)";
+}
+
+function wrColor(wr){
+  if(wr===null) return "var(--muted)";
+  if(wr>=65)  return "var(--bull)";
+  if(wr>=50)  return "var(--chop)";
+  return "var(--bear)";
+}
+
+async function loadData(){
+  try{
+    const r = await fetch(`data/hmm_output.json?t=${Date.now()}`);
+    if(!r.ok) throw new Error("Run python generate_hmm.py first");
+    render(await r.json());
+  }catch(e){
+    document.getElementById("main").innerHTML=`<div class="loading" style="color:var(--bear)">⚠️ ${e.message}</div>`;
   }
 }
 
-const stateColor = s => s==="Bull"?"var(--bull)":s==="Chop"?"var(--chop)":"var(--bear)";
-const sigColor   = s => ({GREEN:"#4ade80",YELLOW:"var(--chop)",ORANGE:"var(--orange)",RED:"var(--bear)"}[s]||"var(--muted)");
-const pClass     = p => p>=.6?"high-prob":p>=.3?"med-prob":"low-prob";
+function render(d){
+  document.getElementById("updated").textContent=`Updated: ${d.generated_at}  ·  Data: ${d.latest_date}`;
+  if(d.regime_change_alert) document.getElementById("alert-banner").classList.add("visible");
 
-function ivrColor(hvr) {
-  if (hvr === null) return "var(--muted)";
-  if (hvr < 30)  return "var(--muted)";
-  if (hvr < 50)  return "var(--chop)";
-  if (hvr < 70)  return "var(--bull)";
-  if (hvr < 85)  return "var(--orange)";
-  return "var(--bear)";
-}
+  const rec  = d.recommendation;
+  const ivr  = d.ivr||{};
+  const hvr  = ivr.hvr??null;
+  const apps = d.approaches_today||[];
+  const bt   = d.backtest||{available:false};
 
-function ivrGradient(hvr) {
-  // colour the gauge fill based on HVR level
-  if (hvr < 30)  return "#475569";
-  if (hvr < 50)  return "var(--chop)";
-  if (hvr < 70)  return "var(--bull)";
-  if (hvr < 85)  return "var(--orange)";
-  return "var(--bear)";
-}
-
-function render(d) {
-  document.getElementById("updated").textContent =
-    `Last updated: ${d.generated_at}  ·  Data through: ${d.latest_date}`;
-
-  if (d.regime_change_alert)
-    document.getElementById("alert-banner").classList.add("visible");
-
-  const rec = d.recommendation;
-  const ivr = d.ivr || {};
-  const hvr = ivr.hvr !== null && ivr.hvr !== undefined ? ivr.hvr : null;
-
-  // Bear trend mini bars
-  const bp5 = d.bear_probs_5d || [];
-  const miniBars = bp5.map(p => {
-    const h = Math.max(4, Math.round(p * 40));
-    const c = p > 0.6 ? "var(--bear)" : p > 0.35 ? "var(--orange)" : "var(--chop)";
+  // mini bear trend bars
+  const bp5 = d.bear_probs_5d||[];
+  const miniB = bp5.map(p=>{
+    const h=Math.max(4,Math.round(p*40));
+    const c=p>.6?"var(--bear)":p>.35?"var(--orange)":"var(--chop)";
     return `<div class="mini-bar" style="height:${h}px;background:${c}"></div>`;
   }).join("");
+  const trendArrow = d.bear_prob_trend==="improving"?"↓ improving":d.bear_prob_trend==="deteriorating"?"↑ deteriorating":"→ stable";
+  const trendC     = d.bear_prob_trend==="improving"?"var(--bull)":d.bear_prob_trend==="deteriorating"?"var(--bear)":"var(--muted)";
 
-  const trendArrow = d.bear_prob_trend === "improving" ? "↓ improving" :
-                     d.bear_prob_trend === "deteriorating" ? "↑ deteriorating" : "→ stable";
-  const trendColor = d.bear_prob_trend === "improving" ? "var(--bull)" :
-                     d.bear_prob_trend === "deteriorating" ? "var(--bear)" : "var(--muted)";
+  // ── 5-approach rows ──
+  const appRows = apps.map((a,rank)=>{
+    const isRec = a.recommended;
+    const col   = approachColor(a.score);
+    const reasons = (a.reasons||[]).slice(0,3).map(r=>`• ${r}`).join(" &nbsp; ");
+    return `
+    <div class="approach-row${isRec?" recommended":""}">
+      <div class="ap-rank" style="color:${col}">${rank+1}</div>
+      <div class="ap-body">
+        <div class="ap-name" style="color:${col}">
+          A${a.id}: ${a.name}
+          ${isRec?'<span class="rec-badge">★ BEST TODAY</span>':""}
+        </div>
+        <div class="ap-action">${a.action}</div>
+        <div class="ap-reasons">${reasons}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Best when: ${a.best_when}</div>
+      </div>
+      <div class="ap-right">
+        <div class="ap-pct" style="color:${col}">${a.pct}%</div>
+        <div class="ap-score-label">score ${a.score}/100</div>
+        <div class="ap-bar-wrap">
+          <div class="ap-bar-fill" style="width:${a.score}%;background:${col}"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // ── Backtest table ──
+  let btHtml = "";
+  if(bt.available && bt.summary){
+    const rows = bt.summary.map((s,i)=>{
+      const wr   = s.win_rate_pct!==null ? s.win_rate_pct : null;
+      const wrStr= wr!==null?`${wr}%`:"N/A";
+      const col  = wrColor(wr);
+      const rClass = i===0?"rank-1":i===1?"rank-2":"rank-3";
+      const ret  = s.avg_fwd_return!==null?`${s.avg_fwd_return>0?"+":""}${s.avg_fwd_return}%`:"N/A";
+      return `
+      <tr>
+        <td class="${rClass}">A${s.id}</td>
+        <td style="color:var(--text)">${s.name}</td>
+        <td>
+          <div style="color:${col};font-weight:700">${wrStr}</div>
+          <div class="wr-bar-wrap"><div class="wr-bar-fill" style="width:${wr||0}%;background:${col}"></div></div>
+        </td>
+        <td style="color:${s.avg_fwd_return>=0?'var(--bull)':'var(--bear)'}">${ret}</td>
+        <td style="color:var(--muted)">${s.sample_size}</td>
+        <td style="color:var(--muted);font-size:10px">${s.skips}</td>
+      </tr>`;
+    }).join("");
+    btHtml = `
+    <div class="section">
+      <h3>📈 Backtest Win Rates — Last ${bt.backtest_days} Days · ${bt.forward_window}-Day Forward Window</h3>
+      <table class="bt-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Strategy</th>
+            <th>Win Rate</th>
+            <th>Avg 5d Return</th>
+            <th>Samples</th>
+            <th>Skipped</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px">
+        Win = MSTR price up in 5 days (puts) or flat/down (covered calls) · Skipped = score &lt; 40 (approach not applicable that day)
+        · ${bt.total_observations} total observations
+      </div>
+    </div>`;
+  }
 
   const html = `
     <!-- Top stats -->
-    <div class="stat-grid">
+    <div class="g3">
       <div class="card">
-        <div class="label">Current Regime</div>
-        <div class="value" style="color:${stateColor(d.current_state)}">${d.current_state}</div>
+        <div class="lbl">Current Regime</div>
+        <div class="val" style="color:${SC(d.current_state)}">${d.current_state}</div>
         <div class="sub">Day ${d.days_in_current_state} in regime</div>
       </div>
       <div class="card">
-        <div class="label">Confidence</div>
-        <div class="value" style="color:${stateColor(d.current_state)}">${(d.state_confidence*100).toFixed(0)}%</div>
+        <div class="lbl">Confidence</div>
+        <div class="val" style="color:${SC(d.current_state)}">${(d.state_confidence*100).toFixed(0)}%</div>
         <div class="sub">
-          <div class="trend-row">
-            <div class="mini-bars">${miniBars}</div>
-            <span style="color:${trendColor};font-size:10px">${trendArrow}</span>
-          </div>
+          <div class="mini-bars">${miniB}</div>
+          <span style="color:${trendC};font-size:10px">${trendArrow}</span>
         </div>
       </div>
       <div class="card">
-        <div class="label">BTC Close</div>
-        <div class="value">$${d.btc_close.toLocaleString()}</div>
-        <div class="sub">vs MA20: ${d.btc_ma20_distance_pct>0?"+":""}${d.btc_ma20_distance_pct}%</div>
+        <div class="lbl">BTC Close</div>
+        <div class="val">$${d.btc_close.toLocaleString()}</div>
+        <div class="sub">MA20: ${d.btc_ma20_distance_pct>0?"+":""}${d.btc_ma20_distance_pct}%</div>
       </div>
     </div>
 
-    <!-- Signal card -->
+    <!-- Signal -->
     <div class="signal-card">
-      <div class="signal-dot ${rec.signal}">${rec.signal[0]}</div>
-      <div class="signal-text">
-        <h2 style="color:${sigColor(rec.signal)}">${rec.signal} — ${rec.action}</h2>
-        <p>Strike guidance: ${rec.strike_adj}</p>
-        <div class="caution">⚠ ${rec.caution}</div>
-        <div class="coveredcall">📋 Covered call: ${rec.covered_call}</div>
+      <div class="sdot ${rec.signal}">${rec.signal[0]}</div>
+      <div class="stxt">
+        <h2 style="color:${SIG(rec.signal)}">${rec.signal} — ${rec.action}</h2>
+        <p>Strike: ${rec.strike_adj}</p>
+        <div class="caut">⚠ ${rec.caution}</div>
+        <div class="cc">📋 ${rec.covered_call}</div>
       </div>
     </div>
 
-    <!-- IVR Panel -->
-    <div class="ivr-panel">
-      <h3>MSTR Historical Volatility Rank (IVR Proxy)</h3>
-      ${hvr !== null ? `
+    <!-- 5-Approach Scorer -->
+    <div class="section">
+      <h3>🎯 5-Strategy Scores — Today's Reading (ranked by suitability)</h3>
+      ${appRows}
+    </div>
+
+    <!-- Backtest -->
+    ${btHtml}
+
+    <!-- IVR -->
+    <div class="section">
+      <h3>📊 MSTR Historical Vol Rank (IVR Proxy)</h3>
+      ${hvr!==null?`
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:13px;color:var(--muted)">HVR</span>
           <span style="font-size:22px;font-weight:700;color:${ivrColor(hvr)}">${hvr.toFixed(0)}</span>
           <span style="font-size:12px;color:${ivrColor(hvr)}">${ivr.ivr_label}</span>
         </div>
         <div class="ivr-gauge-wrap">
-          <div class="ivr-gauge-fill" style="width:${hvr}%;background:${ivrGradient(hvr)}"></div>
-          <div class="ivr-gauge-marker" style="left:${hvr}%"></div>
+          <div class="ivr-gauge-fill" style="width:${hvr}%;background:${ivrGrad(hvr)}"></div>
         </div>
-        <div class="ivr-zones">
-          <span>0 Cheap</span>
-          <span>30</span>
-          <span>50 Sweet spot</span>
-          <span>70</span>
-          <span>85 Extreme 100</span>
-        </div>
+        <div class="ivr-zones"><span>0 Cheap</span><span>30</span><span>50 Sweet</span><span>70</span><span>85 Extreme 100</span></div>
         <div class="ivr-metrics">
-          <div class="ivr-metric">
-            <div class="im-label">30d HV</div>
-            <div class="im-value" style="color:${ivrColor(hvr)}">${ivr.hv_30d}%</div>
-          </div>
-          <div class="ivr-metric">
-            <div class="im-label">10d HV</div>
-            <div class="im-value" style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.hv_10d}%</div>
-          </div>
-          <div class="ivr-metric">
-            <div class="im-label">52w High</div>
-            <div class="im-value" style="color:var(--muted)">${ivr.hv_52w_high}%</div>
-          </div>
-          <div class="ivr-metric">
-            <div class="im-label">52w Low</div>
-            <div class="im-value" style="color:var(--muted)">${ivr.hv_52w_low}%</div>
-          </div>
+          <div class="ivr-m"><div class="iml">30d HV</div><div class="imv" style="color:${ivrColor(hvr)}">${ivr.hv_30d}%</div></div>
+          <div class="ivr-m"><div class="iml">10d HV</div><div class="imv" style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.hv_10d}%</div></div>
+          <div class="ivr-m"><div class="iml">52w High</div><div class="imv" style="color:var(--muted)">${ivr.hv_52w_high}%</div></div>
+          <div class="ivr-m"><div class="iml">52w Low</div><div class="imv" style="color:var(--muted)">${ivr.hv_52w_low}%</div></div>
         </div>
-        <div style="margin-top:12px;padding:10px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--chop)">
-          📊 ${ivr.sell_strategy}
-        </div>
-        <div style="margin-top:6px;font-size:10px;color:var(--muted)">
-          Vol trend: <span style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.vol_trend}</span>
-          &nbsp;·&nbsp; HVR = (30d HV − 52w low) ÷ (52w high − 52w low) × 100 &nbsp;·&nbsp; IVR proxy using MSTR realized vol
-        </div>
-      ` : `<div style="color:var(--muted);font-size:12px">MSTR HVR data unavailable</div>`}
+        <div style="margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--chop)">📊 ${ivr.sell_strategy}</div>
+        <div style="margin-top:6px;font-size:10px;color:var(--muted)">Vol trend: <span style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.vol_trend}</span></div>
+      `:`<div style="color:var(--muted)">HVR unavailable</div>`}
     </div>
 
-    <!-- Probability bars -->
-    <div class="prob-section">
-      <h3>BTC Regime State Probabilities</h3>
+    <!-- Prob bars -->
+    <div class="section">
+      <h3>BTC Regime Probabilities</h3>
       <div class="prob-row">
-        <div class="prob-label">
-          <span style="color:var(--bull)">🟢 Bull</span>
-          <span>${(d.bull_probability*100).toFixed(1)}%</span>
-        </div>
-        <div class="prob-bar-bg"><div class="prob-bar-fill bull-fill" style="width:${d.bull_probability*100}%"></div></div>
+        <div class="prob-label"><span style="color:var(--bull)">🟢 Bull</span><span>${(d.bull_probability*100).toFixed(1)}%</span></div>
+        <div class="pb-bg"><div class="pb-fill bull-f" style="width:${d.bull_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
-        <div class="prob-label">
-          <span style="color:var(--chop)">🟡 Chop</span>
-          <span>${(d.chop_probability*100).toFixed(1)}%</span>
-        </div>
-        <div class="prob-bar-bg"><div class="prob-bar-fill chop-fill" style="width:${d.chop_probability*100}%"></div></div>
+        <div class="prob-label"><span style="color:var(--chop)">🟡 Chop</span><span>${(d.chop_probability*100).toFixed(1)}%</span></div>
+        <div class="pb-bg"><div class="pb-fill chop-f" style="width:${d.chop_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
-        <div class="prob-label">
-          <span style="color:var(--bear)">🔴 Bear</span>
-          <span>${(d.bear_probability*100).toFixed(1)}%</span>
-        </div>
-        <div class="prob-bar-bg"><div class="prob-bar-fill bear-fill" style="width:${d.bear_probability*100}%"></div></div>
+        <div class="prob-label"><span style="color:var(--bear)">🔴 Bear</span><span>${(d.bear_probability*100).toFixed(1)}%</span></div>
+        <div class="pb-bg"><div class="pb-fill bear-f" style="width:${d.bear_probability*100}%"></div></div>
       </div>
     </div>
 
-    <!-- BTC metrics row -->
-    <div class="two-col">
+    <!-- BTC metrics -->
+    <div class="g2">
       <div class="card">
-        <div class="label">3-Day Momentum</div>
-        <div class="value" style="color:${d.momentum_3d_pct>=0?'var(--bull)':'var(--bear)'}">
-          ${d.momentum_3d_pct>0?"+":""}${d.momentum_3d_pct}%
-        </div>
-        <div class="sub">BTC 3-day price change</div>
+        <div class="lbl">3-Day Momentum</div>
+        <div class="val" style="color:${d.momentum_3d_pct>=0?'var(--bull)':'var(--bear)'}">
+          ${d.momentum_3d_pct>0?"+":""}${d.momentum_3d_pct}%</div>
+        <div class="sub">BTC 3-day change</div>
       </div>
       <div class="card">
-        <div class="label">BTC Realized Vol (7D)</div>
-        <div class="value" style="color:${d.realized_vol_7d>80?'var(--bear)':d.realized_vol_7d>50?'var(--chop)':'var(--bull)'}">
-          ${d.realized_vol_7d}%
-        </div>
-        <div class="sub">Annualized</div>
+        <div class="lbl">Realized Vol (7D)</div>
+        <div class="val" style="color:${d.realized_vol_7d>80?'var(--bear)':d.realized_vol_7d>50?'var(--chop)':'var(--bull)'}">
+          ${d.realized_vol_7d}%</div>
+        <div class="sub">Annualized BTC vol</div>
       </div>
     </div>
 
-    <!-- 90-day chart -->
-    <div class="chart-section">
-      <h3>90-Day Regime History — BTC Close + State Probabilities</h3>
+    <!-- Chart -->
+    <div class="section">
+      <h3>90-Day Regime History</h3>
       <div class="chart-wrap"><canvas id="regimeChart"></canvas></div>
     </div>
 
     <!-- Transition matrix -->
-    <div class="matrix-section">
-      <h3>Transition Matrix — Regime-to-Regime Probabilities</h3>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th style="color:var(--bull)">→ Bull</th>
-            <th style="color:var(--chop)">→ Chop</th>
-            <th style="color:var(--bear)">→ Bear</th>
-          </tr>
-        </thead>
+    <div class="section">
+      <h3>Transition Matrix</h3>
+      <table class="mat">
+        <thead><tr><th></th><th style="color:var(--bull)">→ Bull</th><th style="color:var(--chop)">→ Chop</th><th style="color:var(--bear)">→ Bear</th></tr></thead>
         <tbody>
-          ${["Bull","Chop","Bear"].map((lbl,i)=>`
-          <tr>
-            <td class="from-label" style="color:${stateColor(lbl)}">From ${lbl}</td>
-            ${d.transition_matrix[i].map(p=>`<td class="${pClass(p)}">${(p*100).toFixed(1)}%</td>`).join("")}
-          </tr>`).join("")}
+          ${["Bull","Chop","Bear"].map((l,i)=>`
+          <tr><td class="fl" style="color:${SC(l)}">From ${l}</td>
+          ${d.transition_matrix[i].map(p=>`<td class="${PC(p)}">${(p*100).toFixed(1)}%</td>`).join("")}</tr>`).join("")}
         </tbody>
       </table>
     </div>
   `;
 
-  document.getElementById("main-content").innerHTML = html;
+  document.getElementById("main").innerHTML = html;
   drawChart(d.history);
 }
 
-function drawChart(history) {
-  const labels    = history.map(h => h.date.slice(5));
-  const closes    = history.map(h => h.close);
-  const bullProbs = history.map(h => h.bull_prob * 100);
-  const bearProbs = history.map(h => h.bear_prob * 100);
-  const chopProbs = history.map(h => h.chop_prob * 100);
-
+function drawChart(history){
   const ctx = document.getElementById("regimeChart").getContext("2d");
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        { label:"BTC Close", data:closes, borderColor:"#94a3b8", borderWidth:1.5, pointRadius:0, yAxisID:"yBTC", tension:0.3 },
-        { label:"Bull %",    data:bullProbs, borderColor:"rgba(0,255,204,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3 },
-        { label:"Chop %",    data:chopProbs, borderColor:"rgba(250,204,21,.7)", borderWidth:1, borderDash:[4,3], pointRadius:0, yAxisID:"yProb", tension:0.3 },
-        { label:"Bear %",    data:bearProbs, borderColor:"rgba(248,113,113,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3 },
+  new Chart(ctx,{
+    type:"line",
+    data:{
+      labels: history.map(h=>h.date.slice(5)),
+      datasets:[
+        {label:"BTC Close", data:history.map(h=>h.close), borderColor:"#94a3b8", borderWidth:1.5, pointRadius:0, yAxisID:"yBTC", tension:0.3},
+        {label:"Bull %",    data:history.map(h=>h.bull_prob*100), borderColor:"rgba(0,255,204,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3},
+        {label:"Chop %",    data:history.map(h=>h.chop_prob*100), borderColor:"rgba(250,204,21,.7)", borderWidth:1, borderDash:[4,3], pointRadius:0, yAxisID:"yProb", tension:0.3},
+        {label:"Bear %",    data:history.map(h=>h.bear_prob*100), borderColor:"rgba(248,113,113,.8)", borderWidth:1.5, pointRadius:0, yAxisID:"yProb", tension:0.3},
       ]
     },
-    options: {
+    options:{
       responsive:true, maintainAspectRatio:false,
-      interaction:{ mode:"index", intersect:false },
+      interaction:{mode:"index",intersect:false},
       plugins:{
-        legend:{ labels:{ color:"#64748b", font:{size:10}, boxWidth:12 } },
-        tooltip:{
-          backgroundColor:"#0f1318", borderColor:"#1c2230", borderWidth:1,
-          titleColor:"#e2e8f0", bodyColor:"#94a3b8",
-          callbacks:{ label: ctx => ctx.dataset.label==="BTC Close"
-            ? ` BTC $${ctx.parsed.y.toLocaleString()}`
-            : ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` }
-        }
+        legend:{labels:{color:"#64748b",font:{size:10},boxWidth:12}},
+        tooltip:{backgroundColor:"#0f1318",borderColor:"#1c2230",borderWidth:1,titleColor:"#e2e8f0",bodyColor:"#94a3b8",
+          callbacks:{label:ctx=>ctx.dataset.label==="BTC Close"?` BTC $${ctx.parsed.y.toLocaleString()}`:` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`}}
       },
       scales:{
-        x:{ ticks:{ color:"#475569", font:{size:9}, maxTicksLimit:12 }, grid:{ color:"#1c2230" } },
-        yBTC:{ type:"linear", position:"left", ticks:{ color:"#475569", font:{size:9}, callback:v=>`$${(v/1000).toFixed(0)}k` }, grid:{ color:"#1c2230" } },
-        yProb:{ type:"linear", position:"right", min:0, max:100, ticks:{ color:"#475569", font:{size:9}, callback:v=>`${v}%` }, grid:{ drawOnChartArea:false } }
+        x:{ticks:{color:"#475569",font:{size:9},maxTicksLimit:12},grid:{color:"#1c2230"}},
+        yBTC:{type:"linear",position:"left",ticks:{color:"#475569",font:{size:9},callback:v=>`$${(v/1000).toFixed(0)}k`},grid:{color:"#1c2230"}},
+        yProb:{type:"linear",position:"right",min:0,max:100,ticks:{color:"#475569",font:{size:9},callback:v=>`${v}%`},grid:{drawOnChartArea:false}}
       }
     }
   });
@@ -416,8 +418,8 @@ loadData();
 
 <div class="container">
   <div class="footer">
-    Not financial advice · BTC-USD + MSTR data via Yahoo Finance · HVR = IVR proxy (30d realized vol rank)
-    · GitHub Actions: pre-market 08:00 ET + post-close 16:30 ET weekdays
+    Not financial advice · Data: Yahoo Finance (BTC-USD + MSTR) · HVR = 30d realized vol rank (IVR proxy)
+    · Backtest: 5-day forward returns · GitHub Actions: 08:00 ET + 16:30 ET weekdays
   </div>
 </div>
 </body>
