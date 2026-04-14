@@ -7,6 +7,17 @@ Re-validate: Week of May 12, 2026 (4 weeks from now)
 Add 4 new expiry dates: Apr 17, Apr 24, May 1, May 8
 Feed to Claude with screenshots of Chart 3, Chart 4, and HMM chart.
 
+New (correct) hierarchy based on evidence:
+1. BTC spot vs BTC max pain (primary — strongest predictor)
+2. HMM Regime (secondary — confirms direction)
+3. HVR (tertiary — sizes the premium opportunity)
+The combined rule becomes:
+BTC ABOVE pain + Bull regime  → Green: sell puts AT pain
+BTC ABOVE pain + Bear regime  → Yellow: sell puts 1–2 below pain
+BTC BELOW pain + any regime   → Orange/Red: don't rely on magnet
+                                 sell puts 3+ below pain or skip
+
+
 
 
 # BTC HMM · IVR · 5-Strategy Scorer
