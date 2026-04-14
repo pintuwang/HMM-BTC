@@ -1,3 +1,14 @@
+## PENDING VALIDATION
+Date noted: April 14, 2026
+Hypothesis: BTC spot vs BTC pain is PRIMARY predictor of whether
+MSTR closes within $3 of max pain (stronger signal than HMM regime).
+Evidence so far: 4/4 expiries confirmed (small sample — needs more data)
+Re-validate: Week of May 12, 2026 (4 weeks from now)
+Add 4 new expiry dates: Apr 17, Apr 24, May 1, May 8
+Feed to Claude with screenshots of Chart 3, Chart 4, and HMM chart.
+
+
+
 # BTC HMM · IVR · 5-Strategy Scorer
 ### A regime-aware options strategy dashboard for MSTR short put and covered call decisions
 
