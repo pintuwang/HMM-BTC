@@ -6,6 +6,11 @@ on:
     - cron: "30 20 * * 1-5"
   workflow_dispatch:
 
+# ── Node.js 24 compatibility ──────────────────────────────────────────────────
+# Opts in ahead of June 2 2026 forced cutover (Node 20 removed Sep 16 2026)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   update-hmm:
     runs-on: ubuntu-latest
