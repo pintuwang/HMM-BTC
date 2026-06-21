@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>BTC HMM + IVR + Strategy Scorer</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+        integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD"
+        crossorigin="anonymous"></script>
 <style>
   :root {
     --bull:#00ffcc; --chop:#facc15; --bear:#f87171; --orange:#f97316;
@@ -51,7 +53,7 @@
   .stxt .caut{ font-size:11px; color:var(--orange); margin-top:5px; }
   .stxt .cc  { font-size:11px; color:var(--chop); margin-top:5px; border-top:1px solid var(--border); padding-top:6px; }
 
-  /* ── 5-approach scorer ── */
+  /* â”€â”€ 5-approach scorer â”€â”€ */
   .approach-row{
     display:flex; align-items:flex-start; gap:12px;
     padding:12px 0; border-bottom:1px solid var(--border);
@@ -78,7 +80,7 @@
     margin-left:8px; vertical-align:middle;
   }
 
-  /* ── Backtest table ── */
+  /* â”€â”€ Backtest table â”€â”€ */
   .bt-table{ width:100%; border-collapse:collapse; font-size:12px; }
   .bt-table th{ padding:7px 10px; color:var(--muted); font-weight:600; text-align:left; font-size:10px; text-transform:uppercase; border-bottom:1px solid var(--border); }
   .bt-table td{ padding:8px 10px; border-bottom:1px solid #111; }
@@ -127,11 +129,11 @@
 <body>
 <div class="container">
   <div class="header">
-    <h1>₿ BTC HMM · IVR · 5-Strategy Scorer</h1>
-    <p>3-State Regime · MSTR Vol Rank · 5 Premium Strategies Scored + Backtested</p>
+    <h1>â‚¿ BTC HMM Â· IVR Â· 5-Strategy Scorer</h1>
+    <p>3-State Regime Â· MSTR Vol Rank Â· 5 Premium Strategies Scored + Backtested</p>
     <div class="updated" id="updated">Loading...</div>
   </div>
-  <div class="alert" id="alert-banner">⚠️ REGIME CHANGE ALERT — Bear prob crossed 30%. Review positions.</div>
+  <div class="alert" id="alert-banner">âš ï¸ REGIME CHANGE ALERT â€” Bear prob crossed 30%. Review positions.</div>
   <div id="main" class="loading">Fetching data...</div>
 </div>
 
@@ -163,12 +165,12 @@ async function loadData(){
     if(!r.ok) throw new Error("Run python generate_hmm.py first");
     render(await r.json());
   }catch(e){
-    document.getElementById("main").innerHTML=`<div class="loading" style="color:var(--bear)">⚠️ ${e.message}</div>`;
+    document.getElementById("main").innerHTML=`<div class="loading" style="color:var(--bear)">âš ï¸ ${e.message}</div>`;
   }
 }
 
 function render(d){
-  document.getElementById("updated").textContent=`Updated: ${d.generated_at}  ·  Data: ${d.latest_date}`;
+  document.getElementById("updated").textContent=`Updated: ${d.generated_at}  Â·  Data: ${d.latest_date}`;
   if(d.regime_change_alert) document.getElementById("alert-banner").classList.add("visible");
 
   const rec  = d.recommendation;
@@ -184,21 +186,21 @@ function render(d){
     const c=p>.6?"var(--bear)":p>.35?"var(--orange)":"var(--chop)";
     return `<div class="mini-bar" style="height:${h}px;background:${c}"></div>`;
   }).join("");
-  const trendArrow = d.bear_prob_trend==="improving"?"↓ improving":d.bear_prob_trend==="deteriorating"?"↑ deteriorating":"→ stable";
+  const trendArrow = d.bear_prob_trend==="improving"?"â†“ improving":d.bear_prob_trend==="deteriorating"?"â†‘ deteriorating":"â†’ stable";
   const trendC     = d.bear_prob_trend==="improving"?"var(--bull)":d.bear_prob_trend==="deteriorating"?"var(--bear)":"var(--muted)";
 
-  // ── 5-approach rows ──
+  // â”€â”€ 5-approach rows â”€â”€
   const appRows = apps.map((a,rank)=>{
     const isRec = a.recommended;
     const col   = approachColor(a.score);
-    const reasons = (a.reasons||[]).slice(0,3).map(r=>`• ${r}`).join(" &nbsp; ");
+    const reasons = (a.reasons||[]).slice(0,3).map(r=>`â€¢ ${r}`).join(" &nbsp; ");
     return `
     <div class="approach-row${isRec?" recommended":""}">
       <div class="ap-rank" style="color:${col}">${rank+1}</div>
       <div class="ap-body">
         <div class="ap-name" style="color:${col}">
           A${a.id}: ${a.name}
-          ${isRec?'<span class="rec-badge">★ BEST TODAY</span>':""}
+          ${isRec?'<span class="rec-badge">â˜… BEST TODAY</span>':""}
         </div>
         <div class="ap-action">${a.action}</div>
         <div class="ap-reasons">${reasons}</div>
@@ -214,7 +216,7 @@ function render(d){
     </div>`;
   }).join("");
 
-  // ── Backtest table ──
+  // â”€â”€ Backtest table â”€â”€
   let btHtml = "";
   if(bt.available && bt.summary){
     const rows = bt.summary.map((s,i)=>{
@@ -238,7 +240,7 @@ function render(d){
     }).join("");
     btHtml = `
     <div class="section">
-      <h3>📈 Backtest Win Rates — Last ${bt.backtest_days} Days · ${bt.forward_window}-Day Forward Window</h3>
+      <h3>ðŸ“ˆ Backtest Win Rates â€” Last ${bt.backtest_days} Days Â· ${bt.forward_window}-Day Forward Window</h3>
       <table class="bt-table">
         <thead>
           <tr>
@@ -253,8 +255,8 @@ function render(d){
         <tbody>${rows}</tbody>
       </table>
       <div style="font-size:10px;color:var(--muted);margin-top:10px">
-        Win = MSTR price up in 5 days (puts) or flat/down (covered calls) · Skipped = score &lt; 40 (approach not applicable that day)
-        · ${bt.total_observations} total observations
+        Win = MSTR price up in 5 days (puts) or flat/down (covered calls) Â· Skipped = score &lt; 40 (approach not applicable that day)
+        Â· ${bt.total_observations} total observations
       </div>
     </div>`;
   }
@@ -286,16 +288,16 @@ function render(d){
     <div class="signal-card">
       <div class="sdot ${rec.signal}">${rec.signal[0]}</div>
       <div class="stxt">
-        <h2 style="color:${SIG(rec.signal)}">${rec.signal} — ${rec.action}</h2>
+        <h2 style="color:${SIG(rec.signal)}">${rec.signal} â€” ${rec.action}</h2>
         <p>Strike: ${rec.strike_adj}</p>
-        <div class="caut">⚠ ${rec.caution}</div>
-        <div class="cc">📋 ${rec.covered_call}</div>
+        <div class="caut">âš  ${rec.caution}</div>
+        <div class="cc">ðŸ“‹ ${rec.covered_call}</div>
       </div>
     </div>
 
     <!-- 5-Approach Scorer -->
     <div class="section">
-      <h3>🎯 5-Strategy Scores — Today's Reading (ranked by suitability)</h3>
+      <h3>ðŸŽ¯ 5-Strategy Scores â€” Today's Reading (ranked by suitability)</h3>
       ${appRows}
     </div>
 
@@ -304,7 +306,7 @@ function render(d){
 
     <!-- IVR -->
     <div class="section">
-      <h3>📊 MSTR Historical Vol Rank (IVR Proxy)</h3>
+      <h3>ðŸ“Š MSTR Historical Vol Rank (IVR Proxy)</h3>
       ${hvr!==null?`
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:13px;color:var(--muted)">HVR</span>
@@ -321,7 +323,7 @@ function render(d){
           <div class="ivr-m"><div class="iml">52w High</div><div class="imv" style="color:var(--muted)">${ivr.hv_52w_high}%</div></div>
           <div class="ivr-m"><div class="iml">52w Low</div><div class="imv" style="color:var(--muted)">${ivr.hv_52w_low}%</div></div>
         </div>
-        <div style="margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--chop)">📊 ${ivr.sell_strategy}</div>
+        <div style="margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--chop)">ðŸ“Š ${ivr.sell_strategy}</div>
         <div style="margin-top:6px;font-size:10px;color:var(--muted)">Vol trend: <span style="color:${ivr.vol_trend==='rising'?'var(--bear)':ivr.vol_trend==='falling'?'var(--bull)':'var(--muted)'}">${ivr.vol_trend}</span></div>
       `:`<div style="color:var(--muted)">HVR unavailable</div>`}
     </div>
@@ -330,15 +332,15 @@ function render(d){
     <div class="section">
       <h3>BTC Regime Probabilities</h3>
       <div class="prob-row">
-        <div class="prob-label"><span style="color:var(--bull)">🟢 Bull</span><span>${(d.bull_probability*100).toFixed(1)}%</span></div>
+        <div class="prob-label"><span style="color:var(--bull)">ðŸŸ¢ Bull</span><span>${(d.bull_probability*100).toFixed(1)}%</span></div>
         <div class="pb-bg"><div class="pb-fill bull-f" style="width:${d.bull_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
-        <div class="prob-label"><span style="color:var(--chop)">🟡 Chop</span><span>${(d.chop_probability*100).toFixed(1)}%</span></div>
+        <div class="prob-label"><span style="color:var(--chop)">ðŸŸ¡ Chop</span><span>${(d.chop_probability*100).toFixed(1)}%</span></div>
         <div class="pb-bg"><div class="pb-fill chop-f" style="width:${d.chop_probability*100}%"></div></div>
       </div>
       <div class="prob-row">
-        <div class="prob-label"><span style="color:var(--bear)">🔴 Bear</span><span>${(d.bear_probability*100).toFixed(1)}%</span></div>
+        <div class="prob-label"><span style="color:var(--bear)">ðŸ”´ Bear</span><span>${(d.bear_probability*100).toFixed(1)}%</span></div>
         <div class="pb-bg"><div class="pb-fill bear-f" style="width:${d.bear_probability*100}%"></div></div>
       </div>
     </div>
@@ -369,7 +371,7 @@ function render(d){
     <div class="section">
       <h3>Transition Matrix</h3>
       <table class="mat">
-        <thead><tr><th></th><th style="color:var(--bull)">→ Bull</th><th style="color:var(--chop)">→ Chop</th><th style="color:var(--bear)">→ Bear</th></tr></thead>
+        <thead><tr><th></th><th style="color:var(--bull)">â†’ Bull</th><th style="color:var(--chop)">â†’ Chop</th><th style="color:var(--bear)">â†’ Bear</th></tr></thead>
         <tbody>
           ${["Bull","Chop","Bear"].map((l,i)=>`
           <tr><td class="fl" style="color:${SC(l)}">From ${l}</td>
@@ -418,9 +420,10 @@ loadData();
 
 <div class="container">
   <div class="footer">
-    Not financial advice · Data: Yahoo Finance (BTC-USD + MSTR) · HVR = 30d realized vol rank (IVR proxy)
-    · Backtest: 5-day forward returns · GitHub Actions: 08:00 ET + 16:30 ET weekdays
+    Not financial advice Â· Data: Yahoo Finance (BTC-USD + MSTR) Â· HVR = 30d realized vol rank (IVR proxy)
+    Â· Backtest: 5-day forward returns Â· GitHub Actions: 08:00 ET + 16:30 ET weekdays
   </div>
 </div>
 </body>
 </html>
+

@@ -1,0 +1,10 @@
+﻿.env
+.env.local
+.env.*.local
+*.env
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+node_modules/
