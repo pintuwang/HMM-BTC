@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15 13:42 UTC",
+  "generated_at": "2026-07-15 21:31 UTC",
   "latest_date": "2026-07-14",
   "btc_close": 64956.11,
   "btc_ma20": 62010.15,
@@ -851,11 +851,11 @@
     }
   ],
   "ivr": {
-    "hvr": 62.9,
-    "hv_30d": 92.4,
-    "hv_10d": 96.2,
-    "vol_trend": "stable",
-    "ivr_label": "Elevated (63)",
+    "hvr": 63.8,
+    "hv_30d": 93.1,
+    "hv_10d": 78.5,
+    "vol_trend": "falling",
+    "ivr_label": "Elevated (64)",
     "premium_quality": "good",
     "sell_strategy": "Good zone \u2014 sell Chop/Bull",
     "hv_52w_high": 120.7,
@@ -865,13 +865,13 @@
     {
       "id": 2,
       "name": "IVR Filter",
-      "score": 90,
-      "pct": 47.4,
-      "action": "Strong \u2014 HVR 63 in sell zone, regime supports entry",
+      "score": 100,
+      "pct": 48.8,
+      "action": "Strong \u2014 HVR 64 in sell zone, regime supports entry",
       "reasons": [
-        "HVR 63 in ideal 50\u201370 sweet spot",
+        "HVR 64 in ideal 50\u201370 sweet spot",
         "Bull regime \u2014 IVR filter most effective",
-        "Vol stable \u2014 premium holding"
+        "Vol falling \u2014 IV crush starting, sell now before premium drops"
       ],
       "best_when": "HVR 50\u201370 + Bull or Chop regime",
       "recommended": true
@@ -879,25 +879,38 @@
     {
       "id": 5,
       "name": "Calendar Premium",
-      "score": 45,
-      "pct": 23.7,
+      "score": 35,
+      "pct": 17.1,
       "action": "Possible \u2014 sell 30 DTE put while IV still elevated, plan to close at 50% profit",
       "reasons": [
-        "HVR 63 \u2014 30\u201345 DTE options priced attractively",
-        "Vol stable \u2014 30\u201345 DTE premium will decay without immediate crush"
+        "HVR 64 \u2014 30\u201345 DTE options priced attractively",
+        "Vol falling \u2014 calendar viable but close early (10\u201314 days)"
       ],
       "best_when": "Bear just ended, HVR still elevated, sell 30\u201345 DTE",
+      "recommended": false
+    },
+    {
+      "id": 4,
+      "name": "Put Spread (Transition)",
+      "score": 30,
+      "pct": 14.6,
+      "action": "Consider spread \u2014 sells $125P / buys $115P for downside protection",
+      "reasons": [
+        "Vol falling \u2014 spread holds value better than naked put in IV crush",
+        "Bull regime \u2014 naked put preferable to spread"
+      ],
+      "best_when": "Bear\u2192Chop transition + vol falling (IV crush imminent)",
       "recommended": false
     },
     {
       "id": 3,
       "name": "Covered Call (Bear)",
       "score": 25,
-      "pct": 13.2,
+      "pct": 12.2,
       "action": "Not applicable \u2014 not in Bear regime",
       "reasons": [
         "Not in Bear \u2014 covered call suboptimal",
-        "HVR 63 \u2014 call premium good"
+        "HVR 64 \u2014 call premium good"
       ],
       "best_when": "Bear regime + HVR > 70 + hold MSTR shares",
       "recommended": false
@@ -906,25 +919,12 @@
       "id": 1,
       "name": "Chop Transition",
       "score": 15,
-      "pct": 7.9,
+      "pct": 7.3,
       "action": "Not applicable \u2014 regime not transitioning",
       "reasons": [
-        "HVR 63 in sweet spot \u2014 premium still juicy"
+        "HVR 64 in sweet spot \u2014 premium still juicy"
       ],
       "best_when": "Bear prob falling 78%\u219245%, HVR 50\u201370",
-      "recommended": false
-    },
-    {
-      "id": 4,
-      "name": "Put Spread (Transition)",
-      "score": 15,
-      "pct": 7.9,
-      "action": "Not needed \u2014 regime clear enough for naked put or skip entirely",
-      "reasons": [
-        "Vol stable \u2014 spread still adds downside protection",
-        "Bull regime \u2014 naked put preferable to spread"
-      ],
-      "best_when": "Bear\u2192Chop transition + vol falling (IV crush imminent)",
       "recommended": false
     }
   ],
@@ -932,83 +932,60 @@
     "available": true,
     "backtest_days": 90,
     "forward_window": 5,
-    "total_observations": 627,
+    "total_observations": 628,
     "summary": [
       {
-        "id": 5,
-        "name": "Calendar Premium",
-        "wins": 265,
-        "losses": 136,
-        "skips": 226,
-        "win_rate_pct": 66.1,
-        "avg_fwd_return": 1.28,
-        "sample_size": 401
+        "id": 4,
+        "name": "Put Spread (Transition)",
+        "wins": 198,
+        "losses": 135,
+        "skips": 295,
+        "win_rate_pct": 59.5,
+        "avg_fwd_return": 0.49,
+        "sample_size": 333
       },
       {
         "id": 2,
         "name": "IVR Filter",
-        "wins": 296,
+        "wins": 297,
         "losses": 233,
         "skips": 98,
         "win_rate_pct": 56.0,
         "avg_fwd_return": 0.07,
-        "sample_size": 529
+        "sample_size": 530
       },
       {
         "id": 1,
         "name": "Chop Transition",
         "wins": 21,
         "losses": 18,
-        "skips": 588,
+        "skips": 589,
         "win_rate_pct": 53.8,
         "avg_fwd_return": 1.03,
         "sample_size": 39
       },
       {
-        "id": 4,
-        "name": "Put Spread (Transition)",
-        "wins": 150,
-        "losses": 133,
-        "skips": 344,
-        "win_rate_pct": 53.0,
-        "avg_fwd_return": -0.44,
-        "sample_size": 283
+        "id": 5,
+        "name": "Calendar Premium",
+        "wins": 101,
+        "losses": 130,
+        "skips": 397,
+        "win_rate_pct": 43.7,
+        "avg_fwd_return": -1.99,
+        "sample_size": 231
       },
       {
         "id": 3,
         "name": "Covered Call (Bear)",
         "wins": 66,
-        "losses": 124,
+        "losses": 125,
         "skips": 437,
-        "win_rate_pct": 34.7,
-        "avg_fwd_return": -1.46,
-        "sample_size": 190
+        "win_rate_pct": 34.6,
+        "avg_fwd_return": -1.45,
+        "sample_size": 191
       }
     ],
     "daily": [
-      {
-        "date": "2026-06-07",
-        "state": "Bear",
-        "bear_prob": 1.0,
-        "hvr": 34.2,
-        "fwd_return": 3.1,
-        "mstr_up": true,
-        "top_approach": 3,
-        "scores": {
-          "3": 75,
-          "2": 25,
-          "4": 25,
-          "5": 20,
-          "1": 0
-        },
-        "pcts": {
-          "3": 51.7,
-          "2": 17.2,
-          "4": 17.2,
-          "5": 13.8,
-          "1": 0.0
-        }
-      },
       {
         "date": "2026-06-08",
         "state": "Bear",
@@ -1675,6 +1652,29 @@
           "3": 15.1,
           "1": 13.2
         }
+      },
+      {
+        "date": "2026-07-07",
+        "state": "Chop",
+        "bear_prob": 0.0,
+        "hvr": 62.6,
+        "fwd_return": 0.23,
+        "mstr_up": true,
+        "top_approach": 2,
+        "scores": {
+          "2": 75,
+          "5": 65,
+          "4": 50,
+          "3": 40,
+          "1": 35
+        },
+        "pcts": {
+          "2": 28.3,
+          "5": 24.5,
+          "4": 18.9,
+          "3": 15.1,
+          "1": 13.2
+        }
       }
     ]
   },
@@ -1682,8 +1682,8 @@
     "signal": "GREEN",
     "action": "Safe to sell puts at max pain \u2014 elevated premium",
     "strike_adj": "At max pain strike",
-    "caution": "Monitor Bear prob > 20%. \u2705 HVR 63 \u2014 premium elevated",
+    "caution": "Monitor Bear prob > 20%. \u2705 HVR 64 \u2014 premium elevated",
     "covered_call": "\u274c Skip covered call \u2014 want upside exposure in Bull",
-    "ivr_note": "\u2705 HVR 63 \u2014 premium elevated"
+    "ivr_note": "\u2705 HVR 64 \u2014 premium elevated"
   }
 }
