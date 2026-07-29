@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29 14:08 UTC",
+  "generated_at": "2026-07-29 21:28 UTC",
   "latest_date": "2026-07-28",
   "btc_close": 63871.36,
   "btc_ma20": 64409.6,
@@ -851,11 +851,11 @@
     }
   ],
   "ivr": {
-    "hvr": 55.5,
-    "hv_30d": 86.7,
-    "hv_10d": 70.4,
+    "hvr": 54.8,
+    "hv_30d": 86.2,
+    "hv_10d": 65.6,
     "vol_trend": "falling",
-    "ivr_label": "Elevated (56)",
+    "ivr_label": "Elevated (55)",
     "premium_quality": "good",
     "sell_strategy": "Good zone \u2014 sell Chop/Bull",
     "hv_52w_high": 120.7,
@@ -867,9 +867,9 @@
       "name": "IVR Filter",
       "score": 95,
       "pct": 35.2,
-      "action": "Strong \u2014 HVR 56 in sell zone, regime supports entry",
+      "action": "Strong \u2014 HVR 55 in sell zone, regime supports entry",
       "reasons": [
-        "HVR 56 in ideal 50\u201370 sweet spot",
+        "HVR 55 in ideal 50\u201370 sweet spot",
         "Chop with low Bear risk \u2014 good IVR play",
         "Vol falling \u2014 IV crush starting, sell now before premium drops"
       ],
@@ -898,7 +898,7 @@
       "action": "Monitor \u2014 Bear showing early signs of fading",
       "reasons": [
         "Regime in Chop or Bear fading",
-        "HVR 56 in sweet spot \u2014 premium still juicy"
+        "HVR 55 in sweet spot \u2014 premium still juicy"
       ],
       "best_when": "Bear prob falling 78%\u219245%, HVR 50\u201370",
       "recommended": false
@@ -910,7 +910,7 @@
       "pct": 13.0,
       "action": "Possible \u2014 sell 30 DTE put while IV still elevated, plan to close at 50% profit",
       "reasons": [
-        "HVR 56 \u2014 30\u201345 DTE options priced attractively",
+        "HVR 55 \u2014 30\u201345 DTE options priced attractively",
         "Vol falling \u2014 calendar viable but close early (10\u201314 days)"
       ],
       "best_when": "Bear just ended, HVR still elevated, sell 30\u201345 DTE",
@@ -924,7 +924,7 @@
       "action": "Not applicable \u2014 not in Bear regime",
       "reasons": [
         "Not in Bear \u2014 covered call suboptimal",
-        "HVR 56 \u2014 call premium good"
+        "HVR 55 \u2014 call premium good"
       ],
       "best_when": "Bear regime + HVR > 70 + hold MSTR shares",
       "recommended": false
@@ -934,34 +934,34 @@
     "available": true,
     "backtest_days": 90,
     "forward_window": 5,
-    "total_observations": 627,
+    "total_observations": 628,
     "summary": [
       {
         "id": 4,
         "name": "Put Spread (Transition)",
         "wins": 208,
-        "losses": 127,
+        "losses": 128,
         "skips": 292,
-        "win_rate_pct": 62.1,
-        "avg_fwd_return": 0.84,
-        "sample_size": 335
+        "win_rate_pct": 61.9,
+        "avg_fwd_return": 0.82,
+        "sample_size": 336
       },
       {
         "id": 2,
         "name": "IVR Filter",
         "wins": 281,
-        "losses": 229,
+        "losses": 230,
         "skips": 117,
-        "win_rate_pct": 55.1,
-        "avg_fwd_return": -0.0,
-        "sample_size": 510
+        "win_rate_pct": 55.0,
+        "avg_fwd_return": -0.01,
+        "sample_size": 511
       },
       {
         "id": 1,
         "name": "Chop Transition",
         "wins": 25,
         "losses": 21,
-        "skips": 581,
+        "skips": 582,
         "win_rate_pct": 54.3,
         "avg_fwd_return": 0.14,
         "sample_size": 46
@@ -970,47 +970,24 @@
         "id": 5,
         "name": "Calendar Premium",
         "wins": 100,
-        "losses": 133,
+        "losses": 134,
         "skips": 394,
-        "win_rate_pct": 42.9,
-        "avg_fwd_return": -2.09,
-        "sample_size": 233
+        "win_rate_pct": 42.7,
+        "avg_fwd_return": -2.11,
+        "sample_size": 234
       },
       {
         "id": 3,
         "name": "Covered Call (Bear)",
-        "wins": 73,
+        "wins": 74,
         "losses": 144,
         "skips": 410,
-        "win_rate_pct": 33.6,
-        "avg_fwd_return": -1.63,
-        "sample_size": 217
+        "win_rate_pct": 33.9,
+        "avg_fwd_return": -1.6,
+        "sample_size": 218
       }
     ],
     "daily": [
-      {
-        "date": "2026-06-21",
-        "state": "Chop",
-        "bear_prob": 0.0,
-        "hvr": 40.7,
-        "fwd_return": -15.33,
-        "mstr_up": false,
-        "top_approach": 4,
-        "scores": {
-          "4": 50,
-          "2": 45,
-          "5": 40,
-          "3": 25,
-          "1": 20
-        },
-        "pcts": {
-          "4": 27.8,
-          "2": 25.0,
-          "5": 22.2,
-          "3": 13.9,
-          "1": 11.1
-        }
-      },
       {
         "date": "2026-06-22",
         "state": "Chop",
@@ -1677,6 +1654,29 @@
           "3": 12.2,
           "1": 7.3
         }
+      },
+      {
+        "date": "2026-07-21",
+        "state": "Chop",
+        "bear_prob": 0.0,
+        "hvr": 56.2,
+        "fwd_return": -5.68,
+        "mstr_up": false,
+        "top_approach": 2,
+        "scores": {
+          "2": 95,
+          "4": 80,
+          "5": 70,
+          "3": 40,
+          "1": 35
+        },
+        "pcts": {
+          "2": 29.7,
+          "4": 25.0,
+          "5": 21.9,
+          "3": 12.5,
+          "1": 10.9
+        }
       }
     ]
   },
@@ -1684,8 +1684,8 @@
     "signal": "YELLOW",
     "action": "Chop \u2014 sell puts 2 strikes below max pain",
     "strike_adj": "2 strikes below max pain",
-    "caution": "Magnet unreliable in Chop. \u2705 HVR 56 \u2014 premium elevated",
+    "caution": "Magnet unreliable in Chop. \u2705 HVR 55 \u2014 premium elevated",
     "covered_call": "\u274c Skip covered call in Chop",
-    "ivr_note": "\u2705 HVR 56 \u2014 premium elevated"
+    "ivr_note": "\u2705 HVR 55 \u2014 premium elevated"
   }
 }
