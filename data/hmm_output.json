@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18 12:43 UTC",
+  "generated_at": "2026-08-18 20:51 UTC",
   "latest_date": "2026-08-17",
   "btc_close": 64506.25,
   "btc_ma20": 63814.53,
@@ -851,11 +851,11 @@
     }
   ],
   "ivr": {
-    "hvr": 12.1,
-    "hv_30d": 53.6,
-    "hv_10d": 40.6,
+    "hvr": 14.9,
+    "hv_30d": 55.7,
+    "hv_10d": 47.2,
     "vol_trend": "falling",
-    "ivr_label": "Low (12)",
+    "ivr_label": "Low (15)",
     "premium_quality": "cheap",
     "sell_strategy": "Skip \u2014 premium too low",
     "hv_52w_high": 120.7,
@@ -881,9 +881,9 @@
       "name": "IVR Filter",
       "score": 50,
       "pct": 29.4,
-      "action": "Possible \u2014 HVR 12 acceptable but check regime first",
+      "action": "Possible \u2014 HVR 15 acceptable but check regime first",
       "reasons": [
-        "HVR 12 too low \u2014 not worth selling",
+        "HVR 15 too low \u2014 not worth selling",
         "Chop with low Bear risk \u2014 good IVR play",
         "Vol falling \u2014 IV crush starting, sell now before premium drops"
       ],
@@ -910,7 +910,7 @@
       "action": "Not applicable \u2014 not in Bear regime",
       "reasons": [
         "Not in Bear \u2014 covered call suboptimal",
-        "HVR 12 \u2014 call premium thin"
+        "HVR 15 \u2014 call premium thin"
       ],
       "best_when": "Bear regime + HVR > 70 + hold MSTR shares",
       "recommended": false
@@ -932,24 +932,24 @@
     "available": true,
     "backtest_days": 90,
     "forward_window": 5,
-    "total_observations": 625,
+    "total_observations": 628,
     "summary": [
       {
         "id": 4,
         "name": "Put Spread (Transition)",
-        "wins": 206,
+        "wins": 209,
         "losses": 134,
         "skips": 285,
-        "win_rate_pct": 60.6,
-        "avg_fwd_return": -1.07,
-        "sample_size": 340
+        "win_rate_pct": 60.9,
+        "avg_fwd_return": -1.06,
+        "sample_size": 343
       },
       {
         "id": 1,
         "name": "Chop Transition",
         "wins": 25,
         "losses": 19,
-        "skips": 581,
+        "skips": 584,
         "win_rate_pct": 56.8,
         "avg_fwd_return": -2.4,
         "sample_size": 44
@@ -957,19 +957,19 @@
       {
         "id": 2,
         "name": "IVR Filter",
-        "wins": 286,
+        "wins": 289,
         "losses": 234,
         "skips": 105,
-        "win_rate_pct": 55.0,
-        "avg_fwd_return": -1.6,
-        "sample_size": 520
+        "win_rate_pct": 55.3,
+        "avg_fwd_return": -1.59,
+        "sample_size": 523
       },
       {
         "id": 3,
         "name": "Covered Call (Bear)",
         "wins": 71,
         "losses": 89,
-        "skips": 465,
+        "skips": 468,
         "win_rate_pct": 44.4,
         "avg_fwd_return": 1.47,
         "sample_size": 160
@@ -979,82 +979,13 @@
         "name": "Calendar Premium",
         "wins": 106,
         "losses": 135,
-        "skips": 384,
+        "skips": 387,
         "win_rate_pct": 44.0,
         "avg_fwd_return": -2.94,
         "sample_size": 241
       }
     ],
     "daily": [
-      {
-        "date": "2026-07-09",
-        "state": "Chop",
-        "bear_prob": 0.0,
-        "hvr": 62.8,
-        "fwd_return": 0.15,
-        "mstr_up": true,
-        "top_approach": 2,
-        "scores": {
-          "2": 75,
-          "5": 65,
-          "4": 50,
-          "3": 40,
-          "1": 35
-        },
-        "pcts": {
-          "2": 28.3,
-          "5": 24.5,
-          "4": 18.9,
-          "3": 15.1,
-          "1": 13.2
-        }
-      },
-      {
-        "date": "2026-07-10",
-        "state": "Chop",
-        "bear_prob": 0.0,
-        "hvr": 62.8,
-        "fwd_return": 0.22,
-        "mstr_up": true,
-        "top_approach": 2,
-        "scores": {
-          "2": 85,
-          "5": 80,
-          "4": 65,
-          "3": 40,
-          "1": 35
-        },
-        "pcts": {
-          "2": 27.9,
-          "5": 26.2,
-          "4": 21.3,
-          "3": 13.1,
-          "1": 11.5
-        }
-      },
-      {
-        "date": "2026-07-11",
-        "state": "Chop",
-        "bear_prob": 0.0,
-        "hvr": 62.8,
-        "fwd_return": 6.21,
-        "mstr_up": true,
-        "top_approach": 2,
-        "scores": {
-          "2": 85,
-          "5": 80,
-          "4": 65,
-          "3": 40,
-          "1": 35
-        },
-        "pcts": {
-          "2": 27.9,
-          "5": 26.2,
-          "4": 21.3,
-          "3": 13.1,
-          "1": 11.5
-        }
-      },
       {
         "date": "2026-07-12",
         "state": "Chop",
@@ -1675,6 +1606,75 @@
           "3": 5.4,
           "5": 5.4
         }
+      },
+      {
+        "date": "2026-08-08",
+        "state": "Chop",
+        "bear_prob": 0.0,
+        "hvr": 37.6,
+        "fwd_return": 0.36,
+        "mstr_up": true,
+        "top_approach": 4,
+        "scores": {
+          "4": 80,
+          "2": 65,
+          "1": 20,
+          "3": 10,
+          "5": 10
+        },
+        "pcts": {
+          "4": 43.2,
+          "2": 35.1,
+          "1": 10.8,
+          "3": 5.4,
+          "5": 5.4
+        }
+      },
+      {
+        "date": "2026-08-09",
+        "state": "Chop",
+        "bear_prob": 0.0,
+        "hvr": 37.6,
+        "fwd_return": 0.36,
+        "mstr_up": true,
+        "top_approach": 4,
+        "scores": {
+          "4": 80,
+          "2": 65,
+          "1": 20,
+          "3": 10,
+          "5": 10
+        },
+        "pcts": {
+          "4": 43.2,
+          "2": 35.1,
+          "1": 10.8,
+          "3": 5.4,
+          "5": 5.4
+        }
+      },
+      {
+        "date": "2026-08-10",
+        "state": "Chop",
+        "bear_prob": 0.0,
+        "hvr": 37.1,
+        "fwd_return": 0.36,
+        "mstr_up": true,
+        "top_approach": 4,
+        "scores": {
+          "4": 80,
+          "2": 65,
+          "1": 20,
+          "3": 10,
+          "5": 10
+        },
+        "pcts": {
+          "4": 43.2,
+          "2": 35.1,
+          "1": 10.8,
+          "3": 5.4,
+          "5": 5.4
+        }
       }
     ]
   },
@@ -1682,8 +1682,8 @@
     "signal": "YELLOW",
     "action": "Chop \u2014 sell puts 2 strikes below max pain",
     "strike_adj": "2 strikes below max pain",
-    "caution": "Magnet unreliable in Chop. \u26a0\ufe0f HVR 12 \u2014 premium cheap",
+    "caution": "Magnet unreliable in Chop. \u26a0\ufe0f HVR 15 \u2014 premium cheap",
     "covered_call": "\u274c Skip covered call in Chop",
-    "ivr_note": "\u26a0\ufe0f HVR 12 \u2014 premium cheap"
+    "ivr_note": "\u26a0\ufe0f HVR 15 \u2014 premium cheap"
   }
 }
