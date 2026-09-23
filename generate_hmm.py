@@ -602,10 +602,10 @@ def run_backtest(df_btc, log_posteriors, raw_states, state_map,
             if score < 40:
                 approach_stats[aid]["skips"] += 1
                 continue
-
             if aid == 3:
-                # Covered call wins if MSTR flat/down (call not exercised)
-                correct = not mstr_up
+          # Covered call at ~5% OTM wins if MSTR up less than 5%
+                correct = fwd_return < 5.0  # approximate OTM buffer
+            
             else:
                 # Put-based strategies win if MSTR goes up (put expires OTM)
                 correct = mstr_up
