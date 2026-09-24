@@ -38,6 +38,7 @@ OUTPUT_PATH     = "data/hmm_output.json"
 STATE_LABELS    = ["Bull", "Chop", "Bear"]
 BACKTEST_DAYS   = 90     # how many days to backtest
 FORWARD_DAYS    = 5      # look-forward window for outcome (weekly expiry)
+CC_OTM_PCT      = 5.0    # covered-call strike distance used in backtest win condition
 
 IVR_LOW         = 30
 IVR_SWEET_SPOT  = 50
@@ -501,7 +502,7 @@ def score_five_approaches(state: str, bear_prob: float, bear_prob_prev: float,
 # ─────────────────────────────────────────────
 # BACKTEST ENGINE
 # ─────────────────────────────────────────────
-def run_backtest(df_btc, log_posteriors, raw_states, state_map,
+def run_backtest(df_btc, model, X, state_map,
                  mstr_df, hvr_df) -> dict:
     """
     For each of the last BACKTEST_DAYS days:
@@ -520,10 +521,20 @@ def run_backtest(df_btc, log_posteriors, raw_states, state_map,
     results   = []
     n         = len(df_btc)
     tail      = min(BACKTEST_DAYS + FORWARD_DAYS, n - 5)
+    start     = n - tail                      # FIX: was range(tail, ...) = ~630 days, not 90
+
+    # FIX (lookahead): model.predict_proba(X) is forward-backward SMOOTHED — each day's
+    # probability uses future prices. For backtest days, use FILTERED probabilities:
+    # the last row of predict_proba on data truncated at that day uses only the past.
+    filt = {}
+    for i in range(max(0, start - 35), n):
+        filt[i] = model.predict_proba(X[:i + 1])[-1]
+    log_posteriors = filt
+    raw_states     = {i: int(np.argmax(v)) for i, v in filt.items()}
 
     approach_stats = {i: {"wins": 0, "losses": 0, "skips": 0, "returns": []} for i in range(1, 6)}
 
-    for idx in range(tail, n - FORWARD_DAYS):
+    for idx in range(start, n - FORWARD_DAYS):
         date      = df_btc.index[idx]
         date_str  = date.strftime("%Y-%m-%d")
 
@@ -537,17 +548,17 @@ def run_backtest(df_btc, log_posteriors, raw_states, state_map,
 
         # Days in current state
         days_in = 0
-        for k in range(idx, max(0, idx - 30), -1):
+        for k in range(idx, max(start - 35, idx - 30), -1):
             if raw_states[k] == raw_s:
                 days_in += 1
             else:
                 break
 
         # Bear prob previous day
-        bear_prob_prev = float(log_posteriors[idx-1][bear_state]) if idx > 0 else bear_prob
+        bear_prob_prev = float(log_posteriors[idx-1][bear_state]) if (idx-1) in log_posteriors else bear_prob
 
         # Bear prob last 5 days
-        bp5 = [float(log_posteriors[max(0,idx-4+j)][bear_state]) for j in range(5)]
+        bp5 = [float(log_posteriors[idx-4+j][bear_state]) for j in range(5)]
 
         # BTC features
         ma20_dist  = float(df_btc["ma20_distance"].iloc[idx])
@@ -604,7 +615,7 @@ def run_backtest(df_btc, log_posteriors, raw_states, state_map,
                 continue
             if aid == 3:
           # Covered call at ~5% OTM wins if MSTR up less than 5%
-                correct = fwd_return < 5.0  # approximate OTM buffer
+                correct = fwd_return < CC_OTM_PCT
             
             else:
                 # Put-based strategies win if MSTR goes up (put expires OTM)
@@ -744,7 +755,7 @@ def compute_outputs(model, X, df, state_map, raw_states, ivr_data,
 
     # Backtest
     print("📈 Running 5-approach backtest...")
-    backtest = run_backtest(df, log_posteriors, raw_states, state_map, mstr_df, hvr_df)
+    backtest = run_backtest(df, model, X, state_map, mstr_df, hvr_df)
 
     return {
         "generated_at"          : datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
