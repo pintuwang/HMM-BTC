@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-23 23:04 UTC",
-  "latest_date": "2026-09-22",
-  "btc_close": 86172.28,
-  "btc_ma20": 79358.25,
-  "btc_ma20_distance_pct": 8.59,
-  "realized_vol_7d": 48.1,
-  "momentum_3d_pct": 6.08,
+  "generated_at": "2026-09-24 13:38 UTC",
+  "latest_date": "2026-09-23",
+  "btc_close": 84383.01,
+  "btc_ma20": 79513.82,
+  "btc_ma20_distance_pct": 6.12,
+  "realized_vol_7d": 53.64,
+  "momentum_3d_pct": 3.99,
   "bear_prob_trend": "improving",
   "bear_probs_5d": [
     0.0,
@@ -15,106 +15,97 @@
     0.0
   ],
   "current_state": "Chop",
-  "bull_probability": 0.0415,
-  "chop_probability": 0.9585,
+  "bull_probability": 0.003,
+  "chop_probability": 0.997,
   "bear_probability": 0.0,
-  "state_confidence": 0.9585,
-  "days_in_current_state": 2,
+  "state_confidence": 0.997,
+  "days_in_current_state": 3,
   "regime_change_alert": false,
   "transition_matrix": [
     [
-      0.8766,
-      0.0218,
-      0.1016
+      0.8769,
+      0.0217,
+      0.1014
     ],
     [
-      0.104,
-      0.896,
+      0.1029,
+      0.8971,
       0.0
     ],
     [
-      0.0769,
-      0.0233,
-      0.8998
+      0.0768,
+      0.0237,
+      0.8996
     ]
   ],
   "history": [
     {
-      "date": "2026-06-25",
-      "state": "Bear",
-      "bull_prob": 0.048,
-      "chop_prob": 0.0002,
-      "bear_prob": 0.9517,
-      "close": 59721.68,
-      "ma20_distance": -5.58
-    },
-    {
       "date": "2026-06-26",
       "state": "Bear",
-      "bull_prob": 0.0464,
+      "bull_prob": 0.043,
       "chop_prob": 0.0,
-      "bear_prob": 0.9536,
+      "bear_prob": 0.957,
       "close": 60016.43,
       "ma20_distance": -5.05
     },
     {
       "date": "2026-06-27",
       "state": "Bear",
-      "bull_prob": 0.0021,
+      "bull_prob": 0.0019,
       "chop_prob": 0.0,
-      "bear_prob": 0.9979,
+      "bear_prob": 0.9981,
       "close": 59940.1,
       "ma20_distance": -4.93
     },
     {
       "date": "2026-06-28",
       "state": "Bear",
-      "bull_prob": 0.003,
+      "bull_prob": 0.0029,
       "chop_prob": 0.0,
-      "bear_prob": 0.997,
+      "bear_prob": 0.9971,
       "close": 59532.34,
       "ma20_distance": -5.31
     },
     {
       "date": "2026-06-29",
       "state": "Bear",
-      "bull_prob": 0.0436,
+      "bull_prob": 0.0425,
       "chop_prob": 0.0001,
-      "bear_prob": 0.9563,
+      "bear_prob": 0.9574,
       "close": 60138.38,
       "ma20_distance": -4.23
     },
     {
       "date": "2026-06-30",
       "state": "Bear",
-      "bull_prob": 0.2655,
+      "bull_prob": 0.2602,
       "chop_prob": 0.0011,
-      "bear_prob": 0.7335,
+      "bear_prob": 0.7388,
       "close": 58558.86,
       "ma20_distance": -6.53
     },
     {
       "date": "2026-07-01",
       "state": "Bull",
-      "bull_prob": 0.9734,
+      "bull_prob": 0.9722,
       "chop_prob": 0.0016,
-      "bear_prob": 0.025,
+      "bear_prob": 0.0262,
       "close": 60003.76,
       "ma20_distance": -3.95
     },
     {
       "date": "2026-07-02",
       "state": "Bull",
-      "bull_prob": 0.9982,
+      "bull_prob": 0.998,
       "chop_prob": 0.0002,
-      "bear_prob": 0.0016,
+      "bear_prob": 0.0018,
       "close": 61485.3,
       "ma20_distance": -1.42
     },
     {
       "date": "2026-07-03",
       "state": "Bull",
-      "bull_prob": 0.9996,
+      "bull_prob": 0.9995,
       "chop_prob": 0.0,
       "bear_prob": 0.0004,
       "close": 62544.2,
@@ -123,36 +114,36 @@
     {
       "date": "2026-07-04",
       "state": "Bull",
-      "bull_prob": 0.9287,
+      "bull_prob": 0.926,
       "chop_prob": 0.0,
-      "bear_prob": 0.0713,
+      "bear_prob": 0.074,
       "close": 63088.3,
       "ma20_distance": 1.52
     },
     {
       "date": "2026-07-05",
       "state": "Bear",
-      "bull_prob": 0.3754,
+      "bull_prob": 0.3768,
       "chop_prob": 0.0,
-      "bear_prob": 0.6246,
+      "bear_prob": 0.6232,
       "close": 63547.88,
       "ma20_distance": 2.49
     },
     {
       "date": "2026-07-06",
       "state": "Bear",
-      "bull_prob": 0.1348,
+      "bull_prob": 0.1362,
       "chop_prob": 0.0,
-      "bear_prob": 0.8652,
+      "bear_prob": 0.8638,
       "close": 63995.02,
       "ma20_distance": 3.34
     },
     {
       "date": "2026-07-07",
       "state": "Bear",
-      "bull_prob": 0.001,
+      "bull_prob": 0.0011,
       "chop_prob": 0.0,
-      "bear_prob": 0.999,
+      "bear_prob": 0.9989,
       "close": 63297.39,
       "ma20_distance": 2.31
     },
@@ -204,16 +195,16 @@
     {
       "date": "2026-07-13",
       "state": "Bear",
-      "bull_prob": 0.0472,
+      "bull_prob": 0.0486,
       "chop_prob": 0.0005,
-      "bear_prob": 0.9524,
+      "bear_prob": 0.9509,
       "close": 62239.12,
       "ma20_distance": 0.69
     },
     {
       "date": "2026-07-14",
       "state": "Bull",
-      "bull_prob": 0.9963,
+      "bull_prob": 0.9962,
       "chop_prob": 0.0028,
       "bear_prob": 0.0009,
       "close": 64956.11,
@@ -222,9 +213,9 @@
     {
       "date": "2026-07-15",
       "state": "Bull",
-      "bull_prob": 0.9986,
+      "bull_prob": 0.9987,
       "chop_prob": 0.0001,
-      "bear_prob": 0.0013,
+      "bear_prob": 0.0012,
       "close": 64712.38,
       "ma20_distance": 3.94
     },
@@ -240,45 +231,45 @@
     {
       "date": "2026-07-17",
       "state": "Bull",
-      "bull_prob": 0.997,
+      "bull_prob": 0.9972,
       "chop_prob": 0.0001,
-      "bear_prob": 0.0029,
+      "bear_prob": 0.0027,
       "close": 63899.46,
       "ma20_distance": 2.0
     },
     {
       "date": "2026-07-18",
       "state": "Bull",
-      "bull_prob": 0.9966,
+      "bull_prob": 0.9969,
       "chop_prob": 0.0001,
-      "bear_prob": 0.0034,
+      "bear_prob": 0.003,
       "close": 64796.6,
       "ma20_distance": 3.0
     },
     {
       "date": "2026-07-19",
       "state": "Bull",
-      "bull_prob": 0.9601,
+      "bull_prob": 0.9626,
       "chop_prob": 0.0,
-      "bear_prob": 0.0399,
+      "bear_prob": 0.0374,
       "close": 64690.8,
       "ma20_distance": 2.46
     },
     {
       "date": "2026-07-20",
       "state": "Bear",
-      "bull_prob": 0.4649,
+      "bull_prob": 0.4677,
       "chop_prob": 0.0,
-      "bear_prob": 0.5351,
+      "bear_prob": 0.5323,
       "close": 65230.03,
       "ma20_distance": 2.77
     },
     {
       "date": "2026-07-21",
       "state": "Bear",
-      "bull_prob": 0.0036,
+      "bull_prob": 0.0037,
       "chop_prob": 0.0,
-      "bear_prob": 0.9964,
+      "bear_prob": 0.9963,
       "close": 66505.12,
       "ma20_distance": 4.25
     },
@@ -366,18 +357,18 @@
     {
       "date": "2026-07-31",
       "state": "Bear",
-      "bull_prob": 0.0076,
+      "bull_prob": 0.0073,
       "chop_prob": 0.0,
-      "bear_prob": 0.9924,
+      "bear_prob": 0.9927,
       "close": 62813.75,
       "ma20_distance": -2.5
     },
     {
       "date": "2026-08-01",
       "state": "Bear",
-      "bull_prob": 0.0028,
+      "bull_prob": 0.0027,
       "chop_prob": 0.0,
-      "bear_prob": 0.9972,
+      "bear_prob": 0.9973,
       "close": 62763.32,
       "ma20_distance": -2.51
     },
@@ -609,8 +600,8 @@
     {
       "date": "2026-08-27",
       "state": "Chop",
-      "bull_prob": 0.0073,
-      "chop_prob": 0.9927,
+      "bull_prob": 0.0075,
+      "chop_prob": 0.9925,
       "bear_prob": 0.0,
       "close": 80257.54,
       "ma20_distance": 15.12
@@ -618,8 +609,8 @@
     {
       "date": "2026-08-28",
       "state": "Chop",
-      "bull_prob": 0.0524,
-      "chop_prob": 0.9476,
+      "bull_prob": 0.0543,
+      "chop_prob": 0.9457,
       "bear_prob": 0.0,
       "close": 77830.29,
       "ma20_distance": 10.61
@@ -627,53 +618,53 @@
     {
       "date": "2026-08-29",
       "state": "Chop",
-      "bull_prob": 0.1673,
-      "chop_prob": 0.8325,
-      "bear_prob": 0.0002,
+      "bull_prob": 0.1694,
+      "chop_prob": 0.8305,
+      "bear_prob": 0.0001,
       "close": 78245.81,
       "ma20_distance": 10.16
     },
     {
       "date": "2026-08-30",
       "state": "Chop",
-      "bull_prob": 0.5136,
-      "chop_prob": 0.4779,
-      "bear_prob": 0.0085,
+      "bull_prob": 0.4901,
+      "chop_prob": 0.5048,
+      "bear_prob": 0.0051,
       "close": 77667.57,
       "ma20_distance": 8.29
     },
     {
       "date": "2026-08-31",
       "state": "Bull",
-      "bull_prob": 0.5871,
-      "chop_prob": 0.0882,
-      "bear_prob": 0.3247,
+      "bull_prob": 0.6463,
+      "chop_prob": 0.095,
+      "bear_prob": 0.2586,
       "close": 78548.63,
       "ma20_distance": 8.39
     },
     {
       "date": "2026-09-01",
       "state": "Bull",
-      "bull_prob": 0.4886,
-      "chop_prob": 0.0138,
-      "bear_prob": 0.4976,
+      "bull_prob": 0.5739,
+      "chop_prob": 0.0145,
+      "bear_prob": 0.4115,
       "close": 77403.62,
       "ma20_distance": 5.79
     },
     {
       "date": "2026-09-02",
       "state": "Bull",
-      "bull_prob": 0.4748,
+      "bull_prob": 0.5553,
       "chop_prob": 0.002,
-      "bear_prob": 0.5233,
+      "bear_prob": 0.4426,
       "close": 77300.48,
       "ma20_distance": 4.65
     },
     {
       "date": "2026-09-03",
       "state": "Bull",
-      "bull_prob": 0.9883,
-      "chop_prob": 0.0117,
+      "bull_prob": 0.9896,
+      "chop_prob": 0.0104,
       "bear_prob": 0.0,
       "close": 81271.74,
       "ma20_distance": 8.68
@@ -681,8 +672,8 @@
     {
       "date": "2026-09-04",
       "state": "Bull",
-      "bull_prob": 0.999,
-      "chop_prob": 0.001,
+      "bull_prob": 0.9991,
+      "chop_prob": 0.0009,
       "bear_prob": 0.0,
       "close": 79671.97,
       "ma20_distance": 5.37
@@ -717,7 +708,7 @@
     {
       "date": "2026-09-08",
       "state": "Bull",
-      "bull_prob": 0.9984,
+      "bull_prob": 0.9985,
       "chop_prob": 0.0001,
       "bear_prob": 0.0015,
       "close": 78438.58,
@@ -726,9 +717,9 @@
     {
       "date": "2026-09-09",
       "state": "Bull",
-      "bull_prob": 0.9712,
+      "bull_prob": 0.9715,
       "chop_prob": 0.0,
-      "bear_prob": 0.0288,
+      "bear_prob": 0.0285,
       "close": 78259.52,
       "ma20_distance": -0.55
     },
@@ -780,35 +771,35 @@
     {
       "date": "2026-09-15",
       "state": "Bear",
-      "bull_prob": 0.0265,
+      "bull_prob": 0.0246,
       "chop_prob": 0.0001,
-      "bear_prob": 0.9734,
+      "bear_prob": 0.9753,
       "close": 75612.51,
       "ma20_distance": -3.42
     },
     {
       "date": "2026-09-16",
       "state": "Bear",
-      "bull_prob": 0.0369,
+      "bull_prob": 0.0345,
       "chop_prob": 0.0,
-      "bear_prob": 0.9631,
+      "bear_prob": 0.9655,
       "close": 76150.32,
       "ma20_distance": -2.48
     },
     {
       "date": "2026-09-17",
       "state": "Bear",
-      "bull_prob": 0.0704,
+      "bull_prob": 0.0677,
       "chop_prob": 0.0003,
-      "bear_prob": 0.9293,
+      "bear_prob": 0.932,
       "close": 76403.77,
       "ma20_distance": -2.06
     },
     {
       "date": "2026-09-18",
       "state": "Bull",
-      "bull_prob": 0.8522,
-      "chop_prob": 0.1478,
+      "bull_prob": 0.8454,
+      "chop_prob": 0.1546,
       "bear_prob": 0.0,
       "close": 80901.46,
       "ma20_distance": 3.53
@@ -816,8 +807,8 @@
     {
       "date": "2026-09-19",
       "state": "Bull",
-      "bull_prob": 0.8768,
-      "chop_prob": 0.1232,
+      "bull_prob": 0.8696,
+      "chop_prob": 0.1304,
       "bear_prob": 0.0,
       "close": 81233.68,
       "ma20_distance": 3.71
@@ -825,8 +816,8 @@
     {
       "date": "2026-09-20",
       "state": "Bull",
-      "bull_prob": 0.8005,
-      "chop_prob": 0.1995,
+      "bull_prob": 0.7923,
+      "chop_prob": 0.2077,
       "bear_prob": 0.0,
       "close": 81142.61,
       "ma20_distance": 3.43
@@ -834,8 +825,8 @@
     {
       "date": "2026-09-21",
       "state": "Chop",
-      "bull_prob": 0.001,
-      "chop_prob": 0.999,
+      "bull_prob": 0.0001,
+      "chop_prob": 0.9999,
       "bear_prob": 0.0,
       "close": 86602.91,
       "ma20_distance": 9.74
@@ -843,17 +834,26 @@
     {
       "date": "2026-09-22",
       "state": "Chop",
-      "bull_prob": 0.0415,
-      "chop_prob": 0.9585,
+      "bull_prob": 0.0017,
+      "chop_prob": 0.9983,
       "bear_prob": 0.0,
       "close": 86172.28,
       "ma20_distance": 8.59
+    },
+    {
+      "date": "2026-09-23",
+      "state": "Chop",
+      "bull_prob": 0.003,
+      "chop_prob": 0.997,
+      "bear_prob": 0.0,
+      "close": 84383.01,
+      "ma20_distance": 6.12
     }
   ],
   "ivr": {
-    "hvr": 79.7,
-    "hv_30d": 105.4,
-    "hv_10d": 107.0,
+    "hvr": 80.5,
+    "hv_30d": 106.0,
+    "hv_10d": 107.4,
     "vol_trend": "stable",
     "ivr_label": "High (80)",
     "premium_quality": "excellent",
@@ -939,80 +939,57 @@
     "total_observations": 628,
     "summary": [
       {
-        "id": 3,
-        "name": "Covered Call (Bear)",
-        "wins": 282,
-        "losses": 58,
-        "skips": 288,
-        "win_rate_pct": 82.9,
-        "avg_fwd_return": -0.19,
-        "sample_size": 340
-      },
-      {
         "id": 5,
         "name": "Calendar Premium",
-        "wins": 245,
+        "wins": 244,
         "losses": 97,
-        "skips": 286,
+        "skips": 287,
         "win_rate_pct": 71.6,
-        "avg_fwd_return": 1.0,
-        "sample_size": 342
+        "avg_fwd_return": 4.28,
+        "sample_size": 341
       },
       {
         "id": 4,
         "name": "Put Spread (Transition)",
         "wins": 108,
-        "losses": 64,
-        "skips": 456,
-        "win_rate_pct": 62.8,
-        "avg_fwd_return": 0.84,
-        "sample_size": 172
+        "losses": 65,
+        "skips": 455,
+        "win_rate_pct": 62.4,
+        "avg_fwd_return": 2.04,
+        "sample_size": 173
       },
       {
         "id": 2,
         "name": "IVR Filter",
-        "wins": 199,
-        "losses": 124,
-        "skips": 305,
-        "win_rate_pct": 61.6,
-        "avg_fwd_return": 0.33,
-        "sample_size": 323
+        "wins": 198,
+        "losses": 123,
+        "skips": 307,
+        "win_rate_pct": 61.7,
+        "avg_fwd_return": 2.48,
+        "sample_size": 321
+      },
+      {
+        "id": 3,
+        "name": "Covered Call (Bear)",
+        "wins": 200,
+        "losses": 142,
+        "skips": 286,
+        "win_rate_pct": 58.5,
+        "avg_fwd_return": -1.76,
+        "sample_size": 342
       },
       {
         "id": 1,
         "name": "Chop Transition",
-        "wins": 66,
-        "losses": 49,
-        "skips": 513,
-        "win_rate_pct": 57.4,
-        "avg_fwd_return": 0.52,
-        "sample_size": 115
+        "wins": 65,
+        "losses": 48,
+        "skips": 515,
+        "win_rate_pct": 57.5,
+        "avg_fwd_return": 2.56,
+        "sample_size": 113
       }
     ],
     "daily": [
-      {
-        "date": "2026-08-17",
-        "state": "Bear",
-        "bear_prob": 1.0,
-        "hvr": 14.9,
-        "fwd_return": 25.54,
-        "mstr_up": true,
-        "top_approach": 3,
-        "scores": {
-          "3": 75,
-          "4": 40,
-          "2": 25,
-          "5": 10,
-          "1": 0
-        },
-        "pcts": {
-          "3": 50.0,
-          "4": 26.7,
-          "2": 16.7,
-          "5": 6.7,
-          "1": 0.0
-        }
-      },
       {
         "date": "2026-08-18",
         "state": "Bear",
@@ -1292,7 +1269,7 @@
       {
         "date": "2026-08-30",
         "state": "Chop",
-        "bear_prob": 0.009,
+        "bear_prob": 0.005,
         "hvr": 47.0,
         "fwd_return": 2.69,
         "mstr_up": true,
@@ -1315,7 +1292,7 @@
       {
         "date": "2026-08-31",
         "state": "Bull",
-        "bear_prob": 0.325,
+        "bear_prob": 0.259,
         "hvr": 47.5,
         "fwd_return": 2.69,
         "mstr_up": true,
@@ -1338,7 +1315,7 @@
       {
         "date": "2026-09-01",
         "state": "Bull",
-        "bear_prob": 0.498,
+        "bear_prob": 0.412,
         "hvr": 50.2,
         "fwd_return": 6.26,
         "mstr_up": true,
@@ -1361,7 +1338,7 @@
       {
         "date": "2026-09-02",
         "state": "Bull",
-        "bear_prob": 0.523,
+        "bear_prob": 0.443,
         "hvr": 50.1,
         "fwd_return": 4.36,
         "mstr_up": true,
@@ -1371,14 +1348,14 @@
           "1": 40,
           "5": 30,
           "3": 25,
-          "4": 10
+          "4": 20
         },
         "pcts": {
-          "2": 43.2,
-          "1": 21.6,
-          "5": 16.2,
-          "3": 13.5,
-          "4": 5.4
+          "2": 41.0,
+          "1": 20.5,
+          "5": 15.4,
+          "3": 12.8,
+          "4": 10.3
         }
       },
       {
@@ -1414,16 +1391,16 @@
         "top_approach": 2,
         "scores": {
           "2": 80,
-          "1": 47,
+          "1": 40,
           "5": 30,
           "3": 25,
           "4": 0
         },
         "pcts": {
-          "2": 44.0,
-          "1": 25.8,
-          "5": 16.5,
-          "3": 13.7,
+          "2": 45.7,
+          "1": 22.9,
+          "5": 17.1,
+          "3": 14.3,
           "4": 0.0
         }
       },
@@ -1499,7 +1476,7 @@
       {
         "date": "2026-09-08",
         "state": "Bull",
-        "bear_prob": 0.002,
+        "bear_prob": 0.001,
         "hvr": 63.1,
         "fwd_return": -5.07,
         "mstr_up": false,
@@ -1660,7 +1637,7 @@
       {
         "date": "2026-09-15",
         "state": "Bear",
-        "bear_prob": 0.973,
+        "bear_prob": 0.975,
         "hvr": 63.8,
         "fwd_return": 29.11,
         "mstr_up": true,
@@ -1678,6 +1655,29 @@
           "2": 14.5,
           "1": 9.9,
           "4": 5.8
+        }
+      },
+      {
+        "date": "2026-09-16",
+        "state": "Bear",
+        "bear_prob": 0.965,
+        "hvr": 64.5,
+        "fwd_return": 28.55,
+        "mstr_up": true,
+        "top_approach": 3,
+        "scores": {
+          "3": 90,
+          "5": 45,
+          "2": 25,
+          "4": 25,
+          "1": 18
+        },
+        "pcts": {
+          "3": 44.3,
+          "5": 22.2,
+          "2": 12.3,
+          "4": 12.3,
+          "1": 8.9
         }
       }
     ]
