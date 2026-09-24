@@ -1,0 +1,46 @@
+name: Log MSTR IV vs HV
+
+on:
+  schedule:
+    # 19:30 UTC = 15:30 ET in summer / 14:30 ET in winter — both inside market hours,
+    # so bid/ask quotes are live (after-close quotes are often zero or stale).
+    - cron: "30 19 * * 1-5"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  log-iv:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yfinance numpy pandas scipy
+
+      - name: Log IV
+        run: python iv_logger.py
+
+      - name: Commit log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/iv_log.csv data/iv_summary.json
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: log MSTR IV vs HV [skip ci]"
+          git pull --rebase origin main   # HMM workflow may have pushed in the meantime
+          git push
