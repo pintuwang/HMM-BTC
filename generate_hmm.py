@@ -36,9 +36,9 @@ N_ITER          = 200
 N_INIT          = 20
 OUTPUT_PATH     = "data/hmm_output.json"
 STATE_LABELS    = ["Bull", "Chop", "Bear"]
-BACKTEST_DAYS   = 90     # how many days to backtest
+BACKTEST_DAYS   = 365    # calendar days to backtest (weekends skipped -> ~250 MSTR trading days)
 FORWARD_DAYS    = 5      # look-forward window for outcome (weekly expiry)
-CC_OTM_PCT      = 5.0    # covered-call strike distance used in backtest win condition
+CC_OTM_PCT      = 10.0   # covered-call strike distance (% OTM) used in backtest win condition
 
 IVR_LOW         = 30
 IVR_SWEET_SPOT  = 50
@@ -537,6 +537,8 @@ def run_backtest(df_btc, model, X, state_map,
     for idx in range(start, n - FORWARD_DAYS):
         date      = df_btc.index[idx]
         date_str  = date.strftime("%Y-%m-%d")
+        if date.weekday() >= 5:               # FIX: skip Sat/Sun — no MSTR session
+            continue
 
         # Regime at this day
         prob_vec   = log_posteriors[idx]
@@ -626,7 +628,7 @@ def run_backtest(df_btc, model, X, state_map,
             else:
                 approach_stats[aid]["losses"] += 1
 
-            approach_stats[aid]["returns"].append(fwd_return if aid != 3 else -fwd_return)
+            approach_stats[aid]["returns"].append(fwd_return)   # actual MSTR 5d return (not sign-flipped)
 
         results.append(day_result)
 
@@ -638,6 +640,15 @@ def run_backtest(df_btc, model, X, state_map,
         4: "Put Spread (Transition)",
         5: "Calendar Premium",
     }
+
+    # FIX: unconditional baselines — win rate of each win condition over ALL backtest days,
+    # whether or not the strategy fired. A strategy only has an edge if it beats this.
+    n_all = len(results)
+    if n_all > 0:
+        base_put = round(sum(1 for r in results if r["fwd_return"] >= 0) / n_all * 100, 1)
+        base_cc  = round(sum(1 for r in results if r["fwd_return"] < CC_OTM_PCT) / n_all * 100, 1)
+    else:
+        base_put = base_cc = None
 
     summary = []
     for aid in range(1, 6):
@@ -656,16 +667,22 @@ def run_backtest(df_btc, model, X, state_map,
             "win_rate_pct": wr,
             "avg_fwd_return": avg_ret,
             "sample_size" : total,
+            "baseline_wr_pct": base_cc if aid == 3 else base_put,
+            "edge_pp"     : (round(wr - (base_cc if aid == 3 else base_put), 1)
+                             if wr is not None and base_put is not None else None),
         })
 
     # Sort by win rate
-    summary.sort(key=lambda x: (x["win_rate_pct"] or 0), reverse=True)
+    summary.sort(key=lambda x: (x["edge_pp"] if x["edge_pp"] is not None else -999), reverse=True)
 
     return {
         "available"         : True,
         "backtest_days"     : BACKTEST_DAYS,
         "forward_window"    : FORWARD_DAYS,
         "total_observations": len(results),
+        "cc_otm_pct"        : CC_OTM_PCT,
+        "baseline_put_wr_pct": base_put,
+        "baseline_cc_wr_pct" : base_cc,
         "summary"           : summary,
         "daily"             : results[-30:],  # last 30 days for chart
     }
@@ -883,7 +900,7 @@ def main():
     print(f"   {len(df)} rows fetched")
 
     print("📊 Fetching MSTR data (IVR + backtest)...")
-    mstr_df = fetch_mstr(days=400)
+    mstr_df = fetch_mstr(days=800)
     hvr_df  = calculate_rolling_hvr(mstr_df)
     ivr_data = get_hvr_snapshot(hvr_df, df.index[-1])
     if ivr_data["hvr"] is not None:
@@ -924,7 +941,8 @@ def main():
         print(f"\n📈 Backtest Win Rates (last {BACKTEST_DAYS} days, {FORWARD_DAYS}d forward):")
         for s in output["backtest"]["summary"]:
             wr = f"{s['win_rate_pct']}%" if s["win_rate_pct"] is not None else "N/A"
-            print(f"   A{s['id']} {s['name']:<28} WR={wr:>6}  n={s['sample_size']}")
+            edge = f"{s['edge_pp']:+.1f}pp" if s["edge_pp"] is not None else "N/A"
+            print(f"   A{s['id']} {s['name']:<28} WR={wr:>6}  base={s['baseline_wr_pct']}%  edge={edge}  n={s['sample_size']}")
 
 
 if __name__ == "__main__":
