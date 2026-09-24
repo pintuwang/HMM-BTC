@@ -234,6 +234,8 @@ function render(d){
           <div class="wr-bar-wrap"><div class="wr-bar-fill" style="width:${wr||0}%;background:${col}"></div></div>
         </td>
         <td style="color:${s.avg_fwd_return>=0?'var(--bull)':'var(--bear)'}">${ret}</td>
+        <td style="color:var(--muted)">${s.baseline_wr_pct!=null?s.baseline_wr_pct+"%":"N/A"}</td>
+        <td style="font-weight:700;color:${s.edge_pp==null?'var(--muted)':(s.edge_pp>0?'var(--bull)':'var(--bear)')}">${s.edge_pp==null?"N/A":(s.edge_pp>0?"+":"")+s.edge_pp+"pp"}</td>
         <td style="color:var(--muted)">${s.sample_size}</td>
         <td style="color:var(--muted);font-size:10px">${s.skips}</td>
       </tr>`;
@@ -247,7 +249,9 @@ function render(d){
             <th>#</th>
             <th>Strategy</th>
             <th>Win Rate</th>
-            <th>Avg 5d Return</th>
+            <th>Avg MSTR 5d</th>
+            <th>Baseline</th>
+            <th>Edge</th>
             <th>Samples</th>
             <th>Skipped</th>
           </tr>
@@ -255,7 +259,7 @@ function render(d){
         <tbody>${rows}</tbody>
       </table>
       <div style="font-size:10px;color:var(--muted);margin-top:10px">
-        Win = MSTR price up in 5 days (puts) or flat/down (covered calls) Â· Skipped = score &lt; 40 (approach not applicable that day)
+        Weekdays only | Win = MSTR up in 5 days (puts) or up less than ${bt.cc_otm_pct}% (covered call) | Baseline = same win condition on ALL days (put ${bt.baseline_put_wr_pct}% / call ${bt.baseline_cc_wr_pct}%) | Edge = win rate minus baseline; sorted by edge Â· Skipped = score &lt; 40 (approach not applicable that day)
         Â· ${bt.total_observations} total observations
       </div>
     </div>`;
@@ -426,4 +430,3 @@ loadData();
 </div>
 </body>
 </html>
-
