@@ -38,6 +38,7 @@ OUTPUT_PATH     = "data/hmm_output.json"
 STATE_LABELS    = ["Bull", "Chop", "Bear"]
 BACKTEST_DAYS   = 365    # calendar days to backtest (weekends skipped -> ~250 MSTR trading days)
 FORWARD_DAYS    = 5      # look-forward window for outcome (weekly expiry)
+FORECAST_DAYS   = 7      # regime-forecast horizon (calendar days ~ weekly option life)
 CC_OTM_PCT      = 10.0   # covered-call strike distance (% OTM) used in backtest win condition
 
 IVR_LOW         = 30
@@ -770,6 +771,14 @@ def compute_outputs(model, X, df, state_map, raw_states, ivr_data,
     ordered      = [bull_state, chop_state, bear_state]
     trans_matrix = [[round(float(raw_trans[i][j]), 4) for j in ordered] for i in ordered]
 
+    # 7-day matrix: model steps are BTC calendar days, so P^7 = regime ~one weekly expiry out
+    T1       = np.array([[raw_trans[i][j] for j in ordered] for i in ordered], dtype=float)
+    T7       = np.linalg.matrix_power(T1, FORECAST_DAYS)
+    trans_7d = [[round(float(T7[i][j]), 4) for j in range(3)] for i in range(3)]
+    fc       = np.array([bull_prob, chop_prob, bear_prob], dtype=float) @ T7
+    regime_forecast = {"bull": round(float(fc[0]), 4), "chop": round(float(fc[1]), 4),
+                       "bear": round(float(fc[2]), 4)}
+
     # Backtest
     print("📈 Running 5-approach backtest...")
     backtest = run_backtest(df, model, X, state_map, mstr_df, hvr_df)
@@ -792,6 +801,9 @@ def compute_outputs(model, X, df, state_map, raw_states, ivr_data,
         "days_in_current_state" : int(days_in_state),
         "regime_change_alert"   : bool(regime_change_alert or state_changed),
         "transition_matrix"     : trans_matrix,
+        "transition_matrix_7d"  : trans_7d,
+        "forecast_horizon_days" : FORECAST_DAYS,
+        "regime_forecast"       : regime_forecast,
         "history"               : history,
         "ivr"                   : ivr_data,
         "approaches_today"      : today_approaches,
