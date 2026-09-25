@@ -371,17 +371,36 @@ function render(d){
       <div class="chart-wrap"><canvas id="regimeChart"></canvas></div>
     </div>
 
-    <!-- Transition matrix -->
+    <!-- Transition matrices: 1-day and 7-day side by side -->
     <div class="section">
-      <h3>Transition Matrix</h3>
-      <table class="mat">
-        <thead><tr><th></th><th style="color:var(--bull)">â†’ Bull</th><th style="color:var(--chop)">â†’ Chop</th><th style="color:var(--bear)">â†’ Bear</th></tr></thead>
-        <tbody>
-          ${["Bull","Chop","Bear"].map((l,i)=>`
-          <tr><td class="fl" style="color:${SC(l)}">From ${l}</td>
-          ${d.transition_matrix[i].map(p=>`<td class="${PC(p)}">${(p*100).toFixed(1)}%</td>`).join("")}</tr>`).join("")}
-        </tbody>
-      </table>
+      <h3>Transition Matrices</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:18px">
+        ${[["1 day (tomorrow)", d.transition_matrix],
+           [(d.forecast_horizon_days||7)+" days (~weekly option expiry)", d.transition_matrix_7d]]
+          .filter(([,m])=>m).map(([title,m])=>`
+        <div style="flex:1 1 300px;min-width:0;overflow-x:auto">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">${title}</div>
+          <table class="mat">
+            <thead><tr><th></th><th style="color:var(--bull)">&rarr; Bull</th><th style="color:var(--chop)">&rarr; Chop</th><th style="color:var(--bear)">&rarr; Bear</th></tr></thead>
+            <tbody>
+              ${["Bull","Chop","Bear"].map((l,i)=>`
+              <tr><td class="fl" style="color:${SC(l)}">From ${l}</td>
+              ${m[i].map(p=>`<td class="${PC(p)}">${(p*100).toFixed(1)}%</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`).join("")}
+      </div>
+      ${d.regime_forecast ? `
+      <div style="font-size:12px;margin-top:10px">
+        From today's probabilities, regime in ${d.forecast_horizon_days||7} days:
+        <span style="color:var(--bull)">Bull ${(d.regime_forecast.bull*100).toFixed(1)}%</span> &middot;
+        <span style="color:var(--chop)">Chop ${(d.regime_forecast.chop*100).toFixed(1)}%</span> &middot;
+        <span style="color:var(--bear);font-weight:700">Bear ${(d.regime_forecast.bear*100).toFixed(1)}%</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">
+        7-day = 1-day matrix raised to the 7th power (model steps are BTC calendar days). Same information, weekly-option horizon.
+        Forecasts regime labels, which showed no measurable edge on MSTR returns in the backtest &mdash; use as a risk reminder, not a signal.
+      </div>` : ""}
     </div>
   `;
 
