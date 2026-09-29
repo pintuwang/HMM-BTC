@@ -2,13 +2,22 @@ name: Log MSTR IV vs HV
 
 on:
   schedule:
-    # 19:30 UTC = 15:30 ET in summer / 14:30 ET in winter — both inside market hours,
-    # so bid/ask quotes are live (after-close quotes are often zero or stale).
-    - cron: "30 19 * * 1-5"
-  workflow_dispatch:
+    # GitHub scheduled runs are best-effort: often delayed 1-3 h, sometimes dropped,
+    # worst at :00 and :30. So: three tries at odd minutes, all inside US market hours
+    # in both EDT and EST. The script logs the FIRST run that lands in-session and
+    # skips the rest; a delayed run that lands after the close is logged as
+    # 'after_close' and is replaced if a live run arrives later the same day.
+    - cron: "17 15 * * 1-5"   # 11:17 ET summer / 10:17 ET winter
+    - cron: "47 16 * * 1-5"   # 12:47 ET / 11:47 ET
+    - cron: "13 18 * * 1-5"   # 14:13 ET / 13:13 ET
+  workflow_dispatch:           # also callable by an external scheduler (see notes)
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: iv-logger
+  cancel-in-progress: false
 
 jobs:
   log-iv:
@@ -42,5 +51,5 @@ jobs:
           git add data/iv_log.csv data/iv_summary.json
           git diff --staged --quiet && exit 0
           git commit -m "chore: log MSTR IV vs HV [skip ci]"
-          git pull --rebase origin main   # HMM workflow may have pushed in the meantime
+          git pull --rebase origin main
           git push
