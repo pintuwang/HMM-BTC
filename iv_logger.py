@@ -27,6 +27,7 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 from math import log, sqrt, exp
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -44,6 +45,9 @@ LOW_PRICE     = 0.20         # flag contracts with mid below this ($)
 LOG_PATH      = "data/iv_log.csv"
 SUMMARY_PATH  = "data/iv_summary.json"
 RETRIES       = 3
+ET            = ZoneInfo("America/New_York")
+LIVE_START    = (9, 35)      # ET — skip the first 5 min (wide opening quotes)
+LIVE_END      = (15, 55)     # ET — before the closing auction
 
 
 # ─────────────────────────── BLACK-SCHOLES ────────────────────────────
@@ -88,6 +92,15 @@ def with_retries(fn, *args, **kwargs):
     raise last
 
 
+def market_session(now_utc):
+    """'live' during regular US hours (weekday, ET time window), else 'after_close'.
+    Exchange holidays aren't modelled; a holiday run just logs stale quotes as 'live'."""
+    et = now_utc.astimezone(ET)
+    mins = et.hour * 60 + et.minute
+    live = et.weekday() < 5 and LIVE_START[0]*60 + LIVE_START[1] <= mins <= LIVE_END[0]*60 + LIVE_END[1]
+    return "live" if live else "after_close"
+
+
 def realized_vols(hist):
     ret = hist["Close"].pct_change()
     hv30 = float(ret.tail(30).std() * np.sqrt(252))
@@ -117,7 +130,8 @@ def years_to_expiry(expiry, now_utc):
 def build_rows(spot, calls, expiry, now_utc, hv30, hv10):
     """Pure function (testable): one row per OTM level from a calls DataFrame."""
     T = years_to_expiry(expiry, now_utc)
-    dte = (datetime.strptime(expiry, "%Y-%m-%d").date() - now_utc.date()).days
+    et_date = now_utc.astimezone(ET).date()
+    dte = (datetime.strptime(expiry, "%Y-%m-%d").date() - et_date).days
     calls = calls.sort_values("strike")
 
     # ATM reference: strike nearest spot
@@ -159,7 +173,8 @@ def build_rows(spot, calls, expiry, now_utc, hv30, hv10):
         ))
 
     common = dict(
-        date       = now_utc.strftime("%Y-%m-%d"),
+        date       = et_date.strftime("%Y-%m-%d"),
+        session    = market_session(now_utc),
         run_utc    = now_utc.strftime("%Y-%m-%d %H:%M"),
         spot       = round(spot, 2),
         expiry     = expiry,
@@ -178,7 +193,11 @@ def update_log(rows, path):
     if os.path.exists(path):
         old = pd.read_csv(path)
         df = pd.concat([old, new], ignore_index=True)
-        df = df.drop_duplicates(subset=["date", "otm_target"], keep="last")
+        if "session" not in df.columns:
+            df["session"] = np.nan
+        df["_live"] = (df["session"] == "live").astype(int)
+        df = df.sort_values(["date", "otm_target", "_live"], kind="stable")
+        df = df.drop_duplicates(subset=["date", "otm_target"], keep="last").drop(columns="_live")
     else:
         df = new
     df = df.sort_values(["date", "otm_target"]).reset_index(drop=True)
@@ -210,6 +229,13 @@ def write_summary(df, path):
 def main():
     os.makedirs("data", exist_ok=True)
     now_utc = datetime.now(timezone.utc)
+    session = market_session(now_utc)
+    et_date = now_utc.astimezone(ET).strftime("%Y-%m-%d")
+    if os.path.exists(LOG_PATH):
+        old = pd.read_csv(LOG_PATH)
+        if "session" in old.columns and ((old["date"] == et_date) & (old["session"] == "live")).any():
+            print(f"{et_date}: live reading already logged — skipping ({session} run)")
+            return
     tk = yf.Ticker(TICKER)
 
     hist = with_retries(tk.history, period="3mo", auto_adjust=True)
@@ -228,7 +254,7 @@ def main():
     df = update_log(rows, LOG_PATH)
     summary = write_summary(df, SUMMARY_PATH)
 
-    print(f"{TICKER} spot {spot:.2f} | expiry {expiry} | HV30 {hv30:.1%} | HV10 {hv10:.1%}")
+    print(f"{TICKER} spot {spot:.2f} | expiry {expiry} | HV30 {hv30:.1%} | HV10 {hv10:.1%} | session {session}")
     for r in rows:
         if "strike" not in r:
             print(f"  {r['otm_target']:.0%}: {r['note']}")
