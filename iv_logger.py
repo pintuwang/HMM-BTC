@@ -93,12 +93,16 @@ def with_retries(fn, *args, **kwargs):
 
 
 def market_session(now_utc):
-    """'live' during regular US hours (weekday, ET time window), else 'after_close'.
-    Exchange holidays aren't modelled; a holiday run just logs stale quotes as 'live'."""
+    """'live' during regular US hours, 'pre_market' before them on a weekday, else 'after_close'.
+    Exchange holidays aren't modelled (no quotes -> nothing is written, see main)."""
     et = now_utc.astimezone(ET)
     mins = et.hour * 60 + et.minute
-    live = et.weekday() < 5 and LIVE_START[0]*60 + LIVE_START[1] <= mins <= LIVE_END[0]*60 + LIVE_END[1]
-    return "live" if live else "after_close"
+    start, end = LIVE_START[0]*60 + LIVE_START[1], LIVE_END[0]*60 + LIVE_END[1]
+    if et.weekday() < 5 and start <= mins <= end:
+        return "live"
+    if et.weekday() < 5 and mins < start:
+        return "pre_market"
+    return "after_close"
 
 
 def realized_vols(hist):
@@ -251,6 +255,10 @@ def main():
     calls = with_retries(tk.option_chain, expiry).calls
 
     rows = build_rows(spot, calls, expiry, now_utc, hv30, hv10)
+    if not any(r.get("bid", 0) > 0 for r in rows):
+        # Pre-market / holiday: Yahoo returns zero bids. Don't write empty rows.
+        print(f"{et_date}: no bids on any target strike ({session}) — nothing logged")
+        return
     df = update_log(rows, LOG_PATH)
     summary = write_summary(df, SUMMARY_PATH)
 
