@@ -1,34 +1,101 @@
 {
-  "generated_utc": "2026-09-29 12:14",
-  "days_logged": 4,
-  "levels": {
-    "10pct": {
-      "latest_ratio_bid": null,
-      "latest_ratio_mid": null,
-      "mean_ratio_bid_all": 0.746,
-      "mean_ratio_bid_20d": 0.746,
-      "n_valid": 3
+  "generated_utc": "2026-09-29 20:00",
+  "trading_days_logged": 4,
+  "ratio_definition": "IV solved from the BID / 30-day realized vol (seller's view)",
+  "calls": {
+    "description": "OTM calls, strike ABOVE spot \u2014 covered-call side",
+    "breakeven_from_backtest": {
+      "10pct_OTM": 1.09,
+      "15pct_OTM": 1.1,
+      "20pct_OTM": 1.0
     },
-    "15pct": {
-      "latest_ratio_bid": null,
-      "latest_ratio_mid": null,
-      "mean_ratio_bid_all": 0.794,
-      "mean_ratio_bid_20d": 0.794,
-      "n_valid": 3
-    },
-    "20pct": {
-      "latest_ratio_bid": null,
-      "latest_ratio_mid": null,
-      "mean_ratio_bid_all": 0.845,
-      "mean_ratio_bid_20d": 0.845,
-      "n_valid": 3
-    },
-    "25pct": {
-      "latest_ratio_bid": null,
-      "latest_ratio_mid": null,
-      "mean_ratio_bid_all": 0.884,
-      "mean_ratio_bid_20d": 0.884,
-      "n_valid": 3
+    "levels": {
+      "10pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.668,
+        "latest_iv_hv_ratio_mid": 0.672,
+        "mean_iv_hv_ratio_bid_all": 0.727,
+        "mean_iv_hv_ratio_bid_20d": 0.727,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 4,
+        "n_live": 0
+      },
+      "15pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.705,
+        "latest_iv_hv_ratio_mid": 0.709,
+        "mean_iv_hv_ratio_bid_all": 0.772,
+        "mean_iv_hv_ratio_bid_20d": 0.772,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 4,
+        "n_live": 0
+      },
+      "20pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.733,
+        "latest_iv_hv_ratio_mid": 0.744,
+        "mean_iv_hv_ratio_bid_all": 0.817,
+        "mean_iv_hv_ratio_bid_20d": 0.817,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 4,
+        "n_live": 0
+      },
+      "25pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.752,
+        "latest_iv_hv_ratio_mid": 0.773,
+        "mean_iv_hv_ratio_bid_all": 0.851,
+        "mean_iv_hv_ratio_bid_20d": 0.851,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 4,
+        "n_live": 0
+      }
+    }
+  },
+  "puts": {
+    "description": "OTM puts, strike BELOW spot \u2014 cash-secured-put side",
+    "breakeven_from_backtest": null,
+    "levels": {
+      "10pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.641,
+        "latest_iv_hv_ratio_mid": 0.657,
+        "mean_iv_hv_ratio_bid_all": 0.641,
+        "mean_iv_hv_ratio_bid_20d": 0.641,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 1,
+        "n_live": 0
+      },
+      "15pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.672,
+        "latest_iv_hv_ratio_mid": 0.701,
+        "mean_iv_hv_ratio_bid_all": 0.672,
+        "mean_iv_hv_ratio_bid_20d": 0.672,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 1,
+        "n_live": 0
+      },
+      "20pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.729,
+        "latest_iv_hv_ratio_mid": 0.797,
+        "mean_iv_hv_ratio_bid_all": 0.729,
+        "mean_iv_hv_ratio_bid_20d": 0.729,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 1,
+        "n_live": 0
+      },
+      "25pct_OTM": {
+        "latest_date": "2026-09-29",
+        "latest_iv_hv_ratio_bid": 0.827,
+        "latest_iv_hv_ratio_mid": 0.85,
+        "mean_iv_hv_ratio_bid_all": 0.827,
+        "mean_iv_hv_ratio_bid_20d": 0.827,
+        "mean_iv_hv_ratio_bid_live_only": null,
+        "n_valid": 1,
+        "n_live": 0
+      }
     }
   }
 }
