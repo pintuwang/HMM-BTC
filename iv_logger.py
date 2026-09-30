@@ -318,6 +318,11 @@ def main():
         d = pd.read_csv(path)
         return "session" in d.columns and ((d["date"] == et_date) & (d["session"] == "live")).any()
 
+    if session == "pre_market":
+        # Hourly schedule fires before the open too — exit before touching Yahoo.
+        print(f"{et_date}: pre-market run — nothing to log yet")
+        return
+
     if all(has_live_today(p) for p in LOG_PATHS.values()):
         print(f"{et_date}: live calls AND puts already logged — skipping ({session} run)")
         return
