@@ -2,14 +2,12 @@ name: Log MSTR IV vs HV (calls + puts)
 
 on:
   schedule:
-    # GitHub scheduled runs are best-effort: often delayed 1-3 h, sometimes dropped,
-    # worst at :00 and :30. So: three tries at odd minutes, all inside US market hours
-    # in both EDT and EST. The script logs the FIRST run that lands in-session and
-    # skips the rest; a delayed run that lands after the close is logged as
-    # 'after_close' and is replaced if a live run arrives later the same day.
-    - cron: "17 15 * * 1-5"   # 11:17 ET summer / 10:17 ET winter
-    - cron: "47 16 * * 1-5"   # 12:47 ET / 11:47 ET
-    - cron: "13 18 * * 1-5"   # 14:13 ET / 13:13 ET
+    # GitHub delays scheduled runs heavily: on 2026-09-29 the 15:17/16:47/18:13 UTC
+    # schedules actually started at 20:00/21:03/22:11 UTC — all after the close.
+    # So fire every hour from 12:07 to 19:07 UTC. Pre-market runs exit immediately,
+    # the first run that lands in-session logs live quotes, and every later run that
+    # day sees the live rows and skips without calling Yahoo.
+    - cron: "7 12-19 * * 1-5"
   workflow_dispatch:           # also callable by an external scheduler (see notes)
 
 env:
