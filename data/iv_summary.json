@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-11-11 19:32",
-  "trading_days_logged": 34,
+  "generated_utc": "2026-11-12 19:51",
+  "trading_days_logged": 35,
   "ratio_definition": "IV solved from the BID / 30-day realized vol (seller's view)",
   "calls": {
     "description": "OTM calls, strike ABOVE spot \u2014 covered-call side",
@@ -11,44 +11,44 @@
     },
     "levels": {
       "10pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.1,
-        "latest_iv_hv_ratio_mid": 1.106,
-        "mean_iv_hv_ratio_bid_all": 0.938,
-        "mean_iv_hv_ratio_bid_20d": 1.086,
-        "mean_iv_hv_ratio_bid_live_only": 0.935,
-        "n_valid": 34,
-        "n_live": 27
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.128,
+        "latest_iv_hv_ratio_mid": 1.134,
+        "mean_iv_hv_ratio_bid_all": 0.943,
+        "mean_iv_hv_ratio_bid_20d": 1.1,
+        "mean_iv_hv_ratio_bid_live_only": 0.942,
+        "n_valid": 35,
+        "n_live": 28
       },
       "15pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.11,
-        "latest_iv_hv_ratio_mid": 1.119,
-        "mean_iv_hv_ratio_bid_all": 0.964,
-        "mean_iv_hv_ratio_bid_20d": 1.1,
-        "mean_iv_hv_ratio_bid_live_only": 0.958,
-        "n_valid": 34,
-        "n_live": 27
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.13,
+        "latest_iv_hv_ratio_mid": 1.134,
+        "mean_iv_hv_ratio_bid_all": 0.968,
+        "mean_iv_hv_ratio_bid_20d": 1.113,
+        "mean_iv_hv_ratio_bid_live_only": 0.964,
+        "n_valid": 35,
+        "n_live": 28
       },
       "20pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.132,
-        "latest_iv_hv_ratio_mid": 1.141,
-        "mean_iv_hv_ratio_bid_all": 0.989,
-        "mean_iv_hv_ratio_bid_20d": 1.117,
-        "mean_iv_hv_ratio_bid_live_only": 0.989,
-        "n_valid": 34,
-        "n_live": 27
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.153,
+        "latest_iv_hv_ratio_mid": 1.163,
+        "mean_iv_hv_ratio_bid_all": 0.994,
+        "mean_iv_hv_ratio_bid_20d": 1.13,
+        "mean_iv_hv_ratio_bid_live_only": 0.995,
+        "n_valid": 35,
+        "n_live": 28
       },
       "25pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.159,
-        "latest_iv_hv_ratio_mid": 1.169,
-        "mean_iv_hv_ratio_bid_all": 1.024,
-        "mean_iv_hv_ratio_bid_20d": 1.141,
-        "mean_iv_hv_ratio_bid_live_only": 1.021,
-        "n_valid": 33,
-        "n_live": 27
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.178,
+        "latest_iv_hv_ratio_mid": 1.217,
+        "mean_iv_hv_ratio_bid_all": 1.029,
+        "mean_iv_hv_ratio_bid_20d": 1.153,
+        "mean_iv_hv_ratio_bid_live_only": 1.027,
+        "n_valid": 34,
+        "n_live": 28
       }
     }
   },
@@ -57,44 +57,44 @@
     "breakeven_from_backtest": null,
     "levels": {
       "10pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.244,
-        "latest_iv_hv_ratio_mid": 1.25,
-        "mean_iv_hv_ratio_bid_all": 0.994,
-        "mean_iv_hv_ratio_bid_20d": 1.171,
-        "mean_iv_hv_ratio_bid_live_only": 0.969,
-        "n_valid": 31,
-        "n_live": 27
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.291,
+        "latest_iv_hv_ratio_mid": 1.299,
+        "mean_iv_hv_ratio_bid_all": 1.003,
+        "mean_iv_hv_ratio_bid_20d": 1.195,
+        "mean_iv_hv_ratio_bid_live_only": 0.98,
+        "n_valid": 32,
+        "n_live": 28
       },
       "15pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.328,
-        "latest_iv_hv_ratio_mid": 1.335,
-        "mean_iv_hv_ratio_bid_all": 1.059,
-        "mean_iv_hv_ratio_bid_20d": 1.255,
-        "mean_iv_hv_ratio_bid_live_only": 1.035,
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.394,
+        "latest_iv_hv_ratio_mid": 1.406,
+        "mean_iv_hv_ratio_bid_all": 1.069,
+        "mean_iv_hv_ratio_bid_20d": 1.281,
+        "mean_iv_hv_ratio_bid_live_only": 1.047,
+        "n_valid": 32,
+        "n_live": 28
+      },
+      "20pct_OTM": {
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.524,
+        "latest_iv_hv_ratio_mid": 1.545,
+        "mean_iv_hv_ratio_bid_all": 1.196,
+        "mean_iv_hv_ratio_bid_20d": 1.4,
+        "mean_iv_hv_ratio_bid_live_only": 1.168,
         "n_valid": 31,
         "n_live": 27
       },
-      "20pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.433,
-        "latest_iv_hv_ratio_mid": 1.447,
-        "mean_iv_hv_ratio_bid_all": 1.185,
-        "mean_iv_hv_ratio_bid_20d": 1.371,
-        "mean_iv_hv_ratio_bid_live_only": 1.155,
-        "n_valid": 30,
-        "n_live": 26
-      },
       "25pct_OTM": {
-        "latest_date": "2026-11-11",
-        "latest_iv_hv_ratio_bid": 1.584,
-        "latest_iv_hv_ratio_mid": 1.608,
-        "mean_iv_hv_ratio_bid_all": 1.328,
-        "mean_iv_hv_ratio_bid_20d": 1.523,
-        "mean_iv_hv_ratio_bid_live_only": 1.313,
-        "n_valid": 30,
-        "n_live": 26
+        "latest_date": "2026-11-12",
+        "latest_iv_hv_ratio_bid": 1.703,
+        "latest_iv_hv_ratio_mid": 1.735,
+        "mean_iv_hv_ratio_bid_all": 1.34,
+        "mean_iv_hv_ratio_bid_20d": 1.553,
+        "mean_iv_hv_ratio_bid_live_only": 1.328,
+        "n_valid": 31,
+        "n_live": 27
       }
     }
   }
