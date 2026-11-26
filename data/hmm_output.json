@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25 21:07 UTC",
+  "generated_at": "2026-11-26 02:59 UTC",
   "latest_date": "2026-11-24",
   "btc_close": 59747.77,
   "btc_ma20": 67480.35,
@@ -957,9 +957,9 @@
     "available": true,
     "backtest_days": 365,
     "forward_window": 5,
-    "total_observations": 259,
+    "total_observations": 260,
     "cc_otm_pct": 10.0,
-    "baseline_put_wr_pct": 46.3,
+    "baseline_put_wr_pct": 46.2,
     "baseline_cc_wr_pct": 89.2,
     "summary": [
       {
@@ -967,86 +967,63 @@
         "name": "Calendar Premium",
         "wins": 31,
         "losses": 27,
-        "skips": 201,
+        "skips": 202,
         "win_rate_pct": 53.4,
         "avg_fwd_return": -0.83,
         "sample_size": 58,
-        "baseline_wr_pct": 46.3,
-        "edge_pp": 7.1
+        "baseline_wr_pct": 46.2,
+        "edge_pp": 7.2
       },
       {
         "id": 2,
         "name": "IVR Filter",
         "wins": 103,
         "losses": 114,
-        "skips": 42,
+        "skips": 43,
         "win_rate_pct": 47.5,
         "avg_fwd_return": -0.5,
         "sample_size": 217,
-        "baseline_wr_pct": 46.3,
-        "edge_pp": 1.2
+        "baseline_wr_pct": 46.2,
+        "edge_pp": 1.3
+      },
+      {
+        "id": 3,
+        "name": "Covered Call (Bear)",
+        "wins": 48,
+        "losses": 6,
+        "skips": 206,
+        "win_rate_pct": 88.9,
+        "avg_fwd_return": -0.79,
+        "sample_size": 54,
+        "baseline_wr_pct": 89.2,
+        "edge_pp": -0.3
       },
       {
         "id": 4,
         "name": "Put Spread (Transition)",
         "wins": 67,
-        "losses": 78,
+        "losses": 79,
         "skips": 114,
-        "win_rate_pct": 46.2,
-        "avg_fwd_return": -0.85,
-        "sample_size": 145,
-        "baseline_wr_pct": 46.3,
-        "edge_pp": -0.1
-      },
-      {
-        "id": 3,
-        "name": "Covered Call (Bear)",
-        "wins": 47,
-        "losses": 6,
-        "skips": 206,
-        "win_rate_pct": 88.7,
-        "avg_fwd_return": -0.59,
-        "sample_size": 53,
-        "baseline_wr_pct": 89.2,
-        "edge_pp": -0.5
+        "win_rate_pct": 45.9,
+        "avg_fwd_return": -0.92,
+        "sample_size": 146,
+        "baseline_wr_pct": 46.2,
+        "edge_pp": -0.3
       },
       {
         "id": 1,
         "name": "Chop Transition",
         "wins": 5,
         "losses": 10,
-        "skips": 244,
+        "skips": 245,
         "win_rate_pct": 33.3,
         "avg_fwd_return": -9.47,
         "sample_size": 15,
-        "baseline_wr_pct": 46.3,
-        "edge_pp": -13.0
+        "baseline_wr_pct": 46.2,
+        "edge_pp": -12.9
       }
     ],
     "daily": [
-      {
-        "date": "2026-10-07",
-        "state": "Chop",
-        "bear_prob": 0.0,
-        "hvr": 67.7,
-        "fwd_return": -6.6,
-        "mstr_up": false,
-        "top_approach": 2,
-        "scores": {
-          "2": 95,
-          "4": 80,
-          "1": 35,
-          "5": 35,
-          "3": 25
-        },
-        "pcts": {
-          "2": 35.2,
-          "4": 29.6,
-          "1": 13.0,
-          "5": 13.0,
-          "3": 9.3
-        }
-      },
       {
         "date": "2026-10-08",
         "state": "Chop",
@@ -1711,6 +1688,29 @@
           "4": 18.5,
           "5": 14.8,
           "2": 11.1,
+          "1": 0.0
+        }
+      },
+      {
+        "date": "2026-11-18",
+        "state": "Bear",
+        "bear_prob": 1.0,
+        "hvr": 29.4,
+        "fwd_return": -11.47,
+        "mstr_up": false,
+        "top_approach": 3,
+        "scores": {
+          "3": 75,
+          "4": 40,
+          "2": 25,
+          "5": 10,
+          "1": 0
+        },
+        "pcts": {
+          "3": 50.0,
+          "4": 26.7,
+          "2": 16.7,
+          "5": 6.7,
           "1": 0.0
         }
       }
